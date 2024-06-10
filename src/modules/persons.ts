@@ -1,16 +1,13 @@
 import { User } from './users.js';
 
 export class Person extends User{
-  constructor (
-    id: number,
-    email: string,
-    contact: string,
-    type: string,
-    created_at: Date,
-    is_asctive : boolean,
-    private name: string,
-    private last_name: string
-  ){
-    super (id, email, contact, type, created_at, is_asctive)
+  public first_name: string;
+  public last_name: string;
+
+  constructor (id: string, email: string, contact: string, type: string, created_at: Date, is_active : boolean, first_name: string, last_name: string){
+    super (id, email, contact, type, created_at, is_active);
+    
+    this.first_name = first_name;
+    this.last_name = last_name;
   }
 }

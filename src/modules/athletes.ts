@@ -1,19 +1,27 @@
 import { Person } from './persons.js';
 
 export class Athlete extends Person{
+  public sport: string;
+  public position: string;
+  public is_signed: boolean;
+
   constructor (
-    id: number,
+    id: string,
     email: string,
     contact: string,
     type: string,
     created_at: Date,
-    is_asctive : boolean,
-    name: string,
+    is_active : boolean,
+    first_name: string,
     last_name: string,
-    private sport: string,
-    private position: string,
-    private is_signed: boolean
+    sport: string,
+    position: string,
+    is_signed: boolean
   ){
-    super (id, email, contact, type, created_at, is_asctive, name, last_name)
+    super (id, email, contact, type, created_at, is_active, first_name, last_name);
+
+    this.sport = sport;
+    this.position = position;
+    this.is_signed = is_signed;
   }
 }
