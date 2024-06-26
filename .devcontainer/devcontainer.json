@@ -1,0 +1,13 @@
+{
+  "name": "DSW_Backend Codespace",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20.12.2"
+    },
+  },
+  "settings": {
+    "terminal.integrated.defaultProfile.linux": "pnpm" 
+  },
+  "postCreateCommand": "pnpm install"
+}
