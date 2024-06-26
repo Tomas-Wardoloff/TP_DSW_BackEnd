@@ -1,4 +1,4 @@
-import { User } from './users.js';
+import { User } from '../users/users.entity.js';
 
 export class Person extends User{
   public first_name: string;
