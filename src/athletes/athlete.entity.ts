@@ -18,8 +18,10 @@ export class Athlete extends Person{
     position: string,
     is_signed: boolean
   ){
+    // Call the constructor of the parent class
     super (id, email, contact, type, created_at, is_active, first_name, last_name);
 
+    // Initialize Athlete-specific properties
     this.sport = sport;
     this.position = position;
     this.is_signed = is_signed;
