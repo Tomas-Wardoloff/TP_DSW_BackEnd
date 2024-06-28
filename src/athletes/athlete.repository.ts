@@ -12,6 +12,7 @@ export class AthleteRepository implements Repository<Athlete>{
             'athlete',
             new Date(),
             true,
+            new Date(),
             'Manu',
             'Ginobili',
             'Basketball',
@@ -21,7 +22,7 @@ export class AthleteRepository implements Repository<Athlete>{
     ];
 
     // Method to return all Athlete objects
-    public findAll(): Athlete[] {
+    public findAll(): Athlete[] | undefined{
         return this.athletes;
     }
 

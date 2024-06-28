@@ -21,11 +21,11 @@ function findOne(req: Request, res: Response) {
 
 function add(req: Request, res: Response){
     // Destructure the request body to extract the athlete properties
-    const {id, email, contact, type, created_at, is_asctive, name, last_name, sport, position, is_signed} = req.body
+    const {id, email, phone_number, type, created_at, is_asctive, last_login, name, last_name, sport, position, is_signed} = req.body
     
     // Create a new Athlete object with the provided details
     const new_athlete = new Athlete(
-        id, email, contact, type, created_at, is_asctive, name, last_name, sport, position, is_signed
+        id, email, phone_number, type, created_at, is_asctive, last_login, name, last_name, sport, position, is_signed
     )
     repository.add(new_athlete)
     res.status(201).send({message: 'Athlete created', data: new_athlete})
