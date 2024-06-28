@@ -21,11 +21,11 @@ function findOne(req: Request, res: Response) {
 
 function add(req: Request, res:Response){
     // Destructure the request body to extract the agent properties
-    const {id, email, contact, type, created_at, is_active, first_name, last_name, club_id} = req.body;
+    const {id, email, phone_number, type, created_at, is_active, last_login, first_name, last_name, club_id} = req.body;
     
     // Create a new Agent object with the provided details
     const new_agent = new Agent(
-        id, email, contact, type, created_at, is_active, first_name, last_name, club_id
+        id, email, phone_number, type, created_at, is_active, last_login, first_name, last_name, club_id
     );
     repository.add(new_agent);
     res.status(201).send({message: 'Agent created', data: new_agent});

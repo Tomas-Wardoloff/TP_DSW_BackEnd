@@ -8,10 +8,11 @@ export class Athlete extends Person{
   constructor (
     id: string,
     email: string,
-    contact: string,
+    phone_number: string,
     type: string,
     created_at: Date,
     is_active : boolean,
+    last_login: Date,
     first_name: string,
     last_name: string,
     sport: string,
@@ -19,7 +20,7 @@ export class Athlete extends Person{
     is_signed: boolean
   ){
     // Call the constructor of the parent class
-    super (id, email, contact, type, created_at, is_active, first_name, last_name);
+    super (id, email, phone_number, type, created_at, is_active, last_login, first_name, last_name);
 
     // Initialize Athlete-specific properties
     this.sport = sport;

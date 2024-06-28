@@ -12,6 +12,7 @@ export class AthleteRepository implements Repository<Athlete>{
             'athlete',
             new Date(),
             true,
+            new Date(),
             'Manu',
             'Ginobili',
             'Basketball',
