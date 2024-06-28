@@ -21,7 +21,7 @@ export class AthleteRepository implements Repository<Athlete>{
     ];
 
     // Method to return all Athlete objects
-    public findAll(): Athlete[] {
+    public findAll(): Athlete[] | undefined{
         return this.athletes;
     }
 
