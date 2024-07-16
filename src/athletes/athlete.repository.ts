@@ -8,6 +8,7 @@ export class AthleteRepository implements Repository<Athlete>{
         new Athlete(
             '1',
             'manuelginobili@gmail.com',
+            'manuCrack123',
             '1234567890',
             'athlete',
             new Date(),
@@ -15,6 +16,8 @@ export class AthleteRepository implements Repository<Athlete>{
             new Date(),
             'Manu',
             'Ginobili',
+            new Date(),
+            'Argentino',
             'Basketball',
             'Shooting Guard',
             true
