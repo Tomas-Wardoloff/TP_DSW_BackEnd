@@ -7,39 +7,27 @@ export class AgentRepository implements Repository<Agent>{
     private agents: Agent[] = [ ];
 
     // Method to return all Agent objects
-    public findAll(): Agent[] | undefined{
-        return this.agents;
+    public findAll(): Promise<Agent[] | undefined>{
+        throw new Error('Method not implemented.');
     }
 
     // Method to return a single Agent object
-    public findOne(item: {id: string}): Agent | undefined {
-        return this.agents.find(agent => agent.id === item.id);
+    public findOne(item: {id: string}): Promise<Agent | undefined>{
+        throw new Error('Method not implemented.');
     }
 
     // Method to add a new Agent object to the array
-    public add(item: Agent): Agent | undefined {
-        this.agents.push(item);
-        return item;
+    public add(item: Agent): Promise<Agent | undefined> {
+        throw new Error('Method not implemented.');
     }
 
     // Method to update an Agent object in the array
-    public update(item: Agent): Agent | undefined {
-        const index = this.agents.findIndex(agent => agent.id === item.id);
-        
-        if (index != -1) {
-            this.agents[index] = {...this.agents[index], ...item};
-        }
-        return this.agents[index];
+    public update(item: Agent): Promise<Agent | undefined> {
+        throw new Error('Method not implemented.');
     }
 
     // Method to delete an Agent object from the array by ID
-    public delete(item: {id: string}): Agent | undefined {
-        const index = this.agents.findIndex(agent => agent.id === item.id);
-        
-        if (index != -1) {
-            const deleted = this.agents[index];
-            this.agents.splice(index, 1);
-            return deleted;
-        }
+    public delete(item: {id: string}): Promise<Agent | undefined> {
+        throw new Error('Method not implemented.');
     }
 }
