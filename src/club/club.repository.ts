@@ -1,4 +1,4 @@
-import { Club } from "./clubs.entity";
+import { Club } from "./club.entity";
 import { Repository } from "../shared/repository";
 import { pool } from '../shared/db/conn.mysql.js';
 import { ResultSetHeader, RowDataPacket } from 'mysql2'
@@ -25,27 +25,20 @@ export class ClubRepository implements Repository<Club>{
 
     // Method to add a new club object to the array
     public async add(clubInput: Club): Promise<Club | undefined> {
-        const {email, password, phone_number, user_type, created_at, is_active, last_login,name, opening_date} = clubInput;
+        const {email, password, phone_number, user_type, created_at, is_active, last_login, name, address, opening_date} = clubInput;
         
-        const [userResult] = await pool.query<ResultSetHeader>('INSERT INTO users SET ?', {email, password, phone_number, user_type, created_at, is_active, last_login, name, opening_date});
+        const [userResult] = await pool.query<ResultSetHeader>('INSERT INTO users SET ?', {email, password, phone_number, user_type: "Club", created_at, is_active, last_login});
         const id = userResult.insertId;
 
 
-        const [clubResult] = await pool.query<ResultSetHeader>('INSERT INTO clubs SET ?', {id,last_login, name, opening_date});
+        const [clubResult] = await pool.query<ResultSetHeader>('INSERT INTO clubs SET ?', {id, name, address, opening_date});
         
         return clubInput;
     }
 
     // Method to update a club object in the array
-    public async update(item: { id: string; }): Promise<Club | undefined> {
-        try {
-            const clubToDelete = await this.findOne(item);
-            const clubId = Number.parseInt(item.id);
-
-            //hacer algo que actualice el club
-        } catch (error: any){
-            throw new Error('Method not implemented.');
-        }
+    public async update(item: Club): Promise<Club | undefined> {
+        throw new Error('Method not implemented.');
     }
 
     // Methode to delete a club object from the array by ID

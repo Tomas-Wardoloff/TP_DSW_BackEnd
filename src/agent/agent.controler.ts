@@ -32,14 +32,13 @@ function add(req: Request, res:Response){
 
 
 function update(req: Request, res: Response){
-    PassThrough
-    /*const agent = repository.update(req.body);
+    const agent = repository.update(req.body);
     
     if (!agent){
         res.status(404).send({message: 'Agent not found'});
     }else{
         res.status(200).send({message: 'Agent updated successfully', data: agent});
-    }*/
+    }
 }
 
 
