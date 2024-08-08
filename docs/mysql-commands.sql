@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `sportsdb`.`users` (
   PRIMARY KEY (`id`)
 );    
 
-CREATE TABLE IF NOT EXISTS `sportsdb`.`athlete`(
+CREATE TABLE IF NOT EXISTS `sportsdb`.`athletes`(
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `first_name` VARCHAR(255) NOT NULL,
   `last_name` VARCHAR(255) NOT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `sportsdb`.`clubs` (
   FOREIGN KEY (`id`) REFERENCES `users`(`id`)
 );
 
-CREATE TABLE IF NOT EXISTS `sportsdb`.`agent`(
+CREATE TABLE IF NOT EXISTS `sportsdb`.`agents`(
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `first_name` VARCHAR(255) NOT NULL,
   `last_name` VARCHAR(255) NOT NULL,
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS `sportsdb`.`agent`(
   FOREIGN KEY (`club_id`) REFERENCES `clubs`(`id`)
 );
 
-CREATE TABLE IF NOT EXISTS `sportsdb`.`message`(
+CREATE TABLE IF NOT EXISTS `sportsdb`.`messages`(
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `sender_id` INT UNSIGNED NOT NULL,
   `receiver_id` INT UNSIGNED NOT NULL,
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS `sportsdb`.`message`(
   FOREIGN KEY (`receiver_id`) REFERENCES `users`(`id`)
 );
 
-CREATE TABLE IF NOT EXISTS `sportsdb`.`post`(
+CREATE TABLE IF NOT EXISTS `sportsdb`.`posts`(
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `author_id` INT UNSIGNED NOT NULL,
   `title` VARCHAR(255) NOT NULL,
@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS `sportsdb`.`post`(
   FOREIGN KEY (`author_id`) REFERENCES `users`(`id`)
 );
 
-CREATE TABLE IF NOT EXISTS `sportsdb`.`profile`(
+CREATE TABLE IF NOT EXISTS `sportsdb`.`profiles`(
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` INT UNSIGNED NOT NULL,
   `bio` TEXT NOT NULL,
@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS `sportsdb`.`profile`(
   FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)
 );
 
-CREATE TABLE IF NOT EXISTS `sportsdb`.`friend_request`(
+CREATE TABLE IF NOT EXISTS `sportsdb`.`friend_requests`(
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `sender_id` INT UNSIGNED NOT NULL,
   `receiver_id` INT UNSIGNED NOT NULL,
