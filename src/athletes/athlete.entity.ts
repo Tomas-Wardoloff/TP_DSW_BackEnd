@@ -10,7 +10,7 @@ export class Athlete extends User{
   public is_signed: boolean;
 
   constructor (
-    id: string,
+    id: number,
     email: string,
     password: string,
     phone_number: string,

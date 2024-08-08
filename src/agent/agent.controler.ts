@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Agent } from './agent.entity.js';
 import { AgentRepository } from './agent.repository.js';
+import { PassThrough } from 'stream';
 
 const repository = new AgentRepository();
 
@@ -31,13 +32,14 @@ function add(req: Request, res:Response){
 
 
 function update(req: Request, res: Response){
-    const agent = repository.update(req.body);
+    PassThrough
+    /*const agent = repository.update(req.body);
     
     if (!agent){
         res.status(404).send({message: 'Agent not found'});
     }else{
         res.status(200).send({message: 'Agent updated successfully', data: agent});
-    }
+    }*/
 }
 
 
