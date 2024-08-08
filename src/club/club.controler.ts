@@ -1,4 +1,4 @@
-import { Club } from './clubs.entity.js';
+import { Club } from './club.entity.js';
 import { Request, Response } from 'express';
 import { ClubRepository } from './club.repository.js';
 
@@ -21,11 +21,11 @@ async function findOne(req: Request, res: Response) {
 
 async function add(req: Request, res: Response){
     // Destructure the request body to extract the club properties
-    const {id, email, password, phone_number, type, created_at, is_active, last_login, name, opening_date} = req.body;
+    const {id, email, password, phone_number, type, created_at, is_active, last_login, name, address, opening_date} = req.body;
     
     // Create a new Athlete object with the provided details
     const new_club = new Club(
-        id, email, password, phone_number, type, created_at, is_active, last_login, name, opening_date
+        id, email, password, phone_number, type, created_at, is_active, last_login, name, address, opening_date
     );
     await repository.add(new_club);
     res.status(201).send({message: 'Club created', data: new_club});
