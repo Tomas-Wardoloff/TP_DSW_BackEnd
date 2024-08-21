@@ -3,14 +3,14 @@ import { User } from '../users/users.entity.js';
 export class Athlete extends User{
   public first_name: string;
   public last_name: string;
-  public date_birth: Date;
+  public birth_date: Date;
   public nationality: string;
   public sport: string;
   public position: string;
   public is_signed: boolean;
 
   constructor (
-    id: string,
+    id: number,
     email: string,
     password: string,
     phone_number: string,
@@ -20,7 +20,7 @@ export class Athlete extends User{
     last_login: Date,
     first_name: string,
     last_name: string,
-    date_birth: Date,
+    birth_date: Date,
     nationality: string,
     sport: string,
     position: string,
@@ -32,7 +32,7 @@ export class Athlete extends User{
     // Initialize Athlete-specific properties
     this.first_name = first_name;
     this.last_name = last_name;
-    this.date_birth = date_birth;
+    this.birth_date = birth_date;
     this.nationality = nationality;
     this.sport = sport;
     this.position = position;

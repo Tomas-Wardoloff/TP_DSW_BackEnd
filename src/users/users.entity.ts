@@ -1,5 +1,5 @@
 export class User {
-  public id: string;
+  public id: number;
   public email: string;
   public password: string;
   public phone_number: string;
@@ -8,7 +8,7 @@ export class User {
   public is_active : boolean;
   public last_login: Date;
 
-  public constructor(id: string, email: string,password: string,phone_number: string, user_type: string, created_at: Date, is_active : boolean, last_login: Date){
+  public constructor(id: number, email: string,password: string,phone_number: string, user_type: string, created_at: Date, is_active : boolean, last_login: Date){
     this.id = id;
     this.email = email;
     this.password = password

@@ -6,7 +6,7 @@ export class Agent extends User{
     public club_id: string; 
 
     constructor (
-        id: string,
+        id: number,
         email: string,
         password: string,
         phone_number: string,

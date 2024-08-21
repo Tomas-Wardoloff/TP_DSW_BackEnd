@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  db:
+    container_name: tp_dsw_backend
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+      MYSQL_PASSWORD: 'dsw'
+      MYSQL_USER: 'dsw'
+      MYSQL_DATABASE: 'sportsdb'
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
+    driver: local
+                                                                                                        

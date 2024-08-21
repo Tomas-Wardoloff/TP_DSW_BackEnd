@@ -4,13 +4,13 @@ import { AthleteRepository } from './athlete.repository.js'
 
 const repository = new AthleteRepository()
 
-function findAll(req: Request, res: Response) {
-    res.json({data: repository.findAll()})
+async function findAll(req: Request, res: Response) {
+    res.json({data: await repository.findAll()})
 }   
 
 
-function findOne(req: Request, res: Response) {
-    const athlete = repository.findOne({id: req.params.id}) 
+async function findOne(req: Request, res: Response) {
+    const athlete = await repository.findOne({id: req.params.id}) 
     // If no athlete is found, return a 404 response
     if (!athlete){
         res.status(404).send({message: "Athlete not found"})
@@ -19,20 +19,20 @@ function findOne(req: Request, res: Response) {
 }
 
 
-function add(req: Request, res: Response){
+async function add(req: Request, res: Response){
     // Destructure the request body to extract the athlete properties
     const {id, email,password, phone_number, user_type, created_at, is_active, last_login, first_name, last_name,date_birth,nationality, sport, position, is_signed} = req.body
     
     // Create a new Athlete object with the provided details
     const new_athlete = new Athlete(
         id, email,password, phone_number, user_type, created_at, is_active, last_login, first_name, last_name,date_birth,nationality,sport, position, is_signed)
-    repository.add(new_athlete)
+    await repository.add(new_athlete)
     res.status(201).send({message: 'Athlete created', data: new_athlete})
 }
 
 
-function update(req: Request, res: Response){
-    const athlete = repository.update(req.body)
+async function update(req: Request, res: Response){
+    const athlete = await repository.update(req.params.id, req.body)
     
     if (!athlete){
         res.status(404).send({message: 'Athlete not found'})
@@ -42,8 +42,8 @@ function update(req: Request, res: Response){
 }
 
 
-function remove(req: Request, res: Response){
-    const athlete = repository.delete({id: req.params.id})
+async function remove(req: Request, res: Response){
+    const athlete = await repository.delete({id: req.params.id})
     
     if (!athlete){
         res.status(404).send({message: 'Athlete not found'})
