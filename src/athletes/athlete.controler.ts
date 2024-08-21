@@ -32,7 +32,7 @@ async function add(req: Request, res: Response){
 
 
 async function update(req: Request, res: Response){
-    const athlete = await repository.update(req.body)
+    const athlete = await repository.update(req.params.id, req.body)
     
     if (!athlete){
         res.status(404).send({message: 'Athlete not found'})

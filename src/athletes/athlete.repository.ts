@@ -35,8 +35,23 @@ export class AthleteRepository implements Repository<Athlete>{
     }
 
     // Method to update an Athlete object in the array
-    public async update(item: Athlete): Promise<Athlete | undefined> {
-        throw new Error('Method not implemented.');
+    public async update(id: string, athleteInput: Athlete): Promise<Athlete | undefined> {
+        const athleteId = Number.parseInt(id);
+        const {first_name, last_name, birth_date, nationality, sport, position, is_signed} = athleteInput;
+        
+        const updates = `
+            first_name = ?,
+            last_name = ?,
+            birth_date = ?,
+            nationality = ?,
+            sport = ?,
+            position = ?,
+            is_signed = ?
+        `;
+
+        await pool.execute(`UPDATE athletes SET ${updates} WHERE id = ?`, [first_name, last_name, birth_date, nationality, sport, position, is_signed, athleteId]);
+        
+        return await this.findOne({id: id});
     }
 
     // Method to delete an Athlete object from the array by ID

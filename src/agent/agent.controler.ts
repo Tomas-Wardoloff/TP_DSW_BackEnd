@@ -32,7 +32,7 @@ function add(req: Request, res:Response){
 
 
 function update(req: Request, res: Response){
-    const agent = repository.update(req.body);
+    const agent = repository.update(req.params.id, req.body);
     
     if (!agent){
         res.status(404).send({message: 'Agent not found'});

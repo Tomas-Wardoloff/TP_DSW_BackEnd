@@ -33,7 +33,7 @@ async function add(req: Request, res: Response){
 
 
 async function update(req: Request, res: Response){
-    const club =  await repository.update(req.body);
+    const club =  await repository.update(req.params.id, req.body);
     
     if (!club){
         res.status(404).send({message: 'Club not found'});

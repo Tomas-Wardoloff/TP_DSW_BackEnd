@@ -37,8 +37,19 @@ export class ClubRepository implements Repository<Club>{
     }
 
     // Method to update a club object in the array
-    public async update(item: Club): Promise<Club | undefined> {
-        throw new Error('Method not implemented.');
+    public async update(id: string, clubInput: Club): Promise<Club | undefined> {
+        const clubId = Number.parseInt(id);
+        const {name, address, opening_date} = clubInput;
+
+        const updates = `
+            name = ?,
+            address = ?,
+            opening_date = ?
+        `;
+        
+        await pool.execute(`UPDATE clubs SET ${updates} WHERE id = ?`, [name, address, opening_date, clubId]);
+        
+        return await this.findOne({id: id}); 
     }
 
     // Methode to delete a club object from the array by ID

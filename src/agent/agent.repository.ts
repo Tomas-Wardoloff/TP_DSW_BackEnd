@@ -39,8 +39,20 @@ export class AgentRepository implements Repository<Agent>{
     }
 
     // Method to update an Agent object in the array
-    public async update(item: Agent): Promise<Agent | undefined> {
-        throw new Error('Method not implemented.');
+    public async update(id: string, agentInput: Agent): Promise<Agent | undefined> {
+        const agentId = Number.parseInt(id);
+        const {first_name, last_name, club_id} = agentInput;
+
+        const updates = `
+            first_name = ?,
+            last_name = ?,
+            club_id = ?
+        `;
+
+        await pool.execute(`UPDATE agents SET ${updates} WHERE id = ?`, [first_name, last_name, club_id, agentId]);    
+
+        return await this.findOne({id: id});
+
     }
 
     // Method to delete an Agent object from the array by ID
