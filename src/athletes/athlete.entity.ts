@@ -1,32 +1,30 @@
-import { User } from "../users/users.entity";
-import { Opt, Entity, OneToOne, PrimaryKey, Property } from "@mikro-orm/core";
+import { User } from "../users/users.entity.js";
+import { BaseEntity } from "../shared/db/baseEntity.entity.js";
+import {Entity, OneToOne, Property } from "@mikro-orm/core";
 
 @Entity()
-export class Athlete{
-  @PrimaryKey()
-  id!: number;
-
-  @Property()
+export class Athlete extends BaseEntity {
+  @Property({nullable: false})
   first_name!: string;
   
-  @Property()
+  @Property({nullable: false})
   last_name!: string;
   
-  @Property()
+  @Property({nullable: false})
   birth_date!: Date;
   
-  @Property()
+  @Property({nullable: false})
   nationality!: string;
   
-  @Property()
+  @Property({nullable: false})
   sport!: string;
   
-  @Property()
+  @Property({nullable: false})
   position!: string;
   
-  @Property({default: false})
-  is_signed!: boolean & Opt;
+  @Property({default: false, nullable: false})
+  is_signed!: boolean;
 
-  @OneToOne()
+  @OneToOne(() => User, {nullable: false})
   user!: User;
 }

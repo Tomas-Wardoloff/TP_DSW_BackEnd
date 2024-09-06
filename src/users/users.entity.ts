@@ -1,11 +1,9 @@
-import { Entity, Opt, PrimaryKey, Property, Enum } from "@mikro-orm/core";
+import { Entity, Property, Enum } from "@mikro-orm/core";
+import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 
 @Entity()
-export class User {
-  @PrimaryKey()
-  id!: number;
-
-  @Property({unique: true})
+export class User extends BaseEntity {
+  @Property({nullable: false, unique: true})
   email!: string;
 
   @Property()
@@ -17,11 +15,8 @@ export class User {
   @Enum(() => UserType)
   user_type!: UserType;
   
-  @Property({ onCreate: () => new Date() })
-  created_at!: Date;
-  
   @Property({default: true})
-  is_active!: boolean & Opt;
+  is_active!: boolean;
   
   @Property()
   last_login!: Date;
