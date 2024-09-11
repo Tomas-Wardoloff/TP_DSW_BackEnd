@@ -1,6 +1,6 @@
 import { User } from '../users/users.entity.js';
 import { BaseEntity } from '../shared/db/baseEntity.entity.js';
-import { Entity, OneToOne, Property } from "@mikro-orm/core";
+import { Entity, OneToOne, Property, Cascade } from "@mikro-orm/core";
 
 @Entity()
 export class Club extends BaseEntity {
@@ -13,6 +13,6 @@ export class Club extends BaseEntity {
   @Property({nullable: false})
   opening_date!: Date;
 
-  @OneToOne(() => User, {nullable: false})
+  @OneToOne(() => User, {nullable: false, cascade: [Cascade.ALL]})
   user!: User;
 }
