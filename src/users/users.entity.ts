@@ -1,21 +1,29 @@
-export class User {
-  public id: number;
-  public email: string;
-  public password: string;
-  public phone_number: string;
-  public user_type: string;
-  public created_at: Date;
-  public is_active : boolean;
-  public last_login: Date;
+import { Entity, Property, Enum } from "@mikro-orm/core";
+import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 
-  public constructor(id: number, email: string,password: string,phone_number: string, user_type: string, created_at: Date, is_active : boolean, last_login: Date){
-    this.id = id;
-    this.email = email;
-    this.password = password
-    this.phone_number = phone_number;
-    this.user_type = user_type;
-    this.created_at = created_at;
-    this.is_active = is_active;
-    this.last_login = last_login;
-  }
+@Entity()
+export class User extends BaseEntity {
+  @Property({nullable: false, unique: true})
+  email!: string;
+
+  @Property()
+  password!: string;
+  
+  @Property()
+  phone_number!: string;
+  
+  @Enum(() => UserType)
+  user_type!: UserType;
+  
+  @Property({default: true})
+  is_active!: boolean;
+  
+  @Property()
+  last_login!: Date;
+}
+
+export enum UserType {
+  ATHLETE = 'athlete',
+  CLUB = 'club',
+  AGENT = 'agent'
 }

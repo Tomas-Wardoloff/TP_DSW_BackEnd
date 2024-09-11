@@ -1,55 +1,63 @@
 import { Request, Response } from 'express'
 import { Athlete } from './athlete.entity.js'
-import { AthleteRepository } from './athlete.repository.js'
+import { orm } from '../shared/db/orm.js'
 
-const repository = new AthleteRepository()
+
+const em = orm.em
 
 async function findAll(req: Request, res: Response) {
-    res.json({data: await repository.findAll()})
+    try{
+        const athletes = await em.find(Athlete, {})
+        res.status(200).json({message: 'finded all athletes',data: athletes})
+    }catch (error: any){
+        res.status(500).json({message: error.message})
+    }
 }   
 
 
 async function findOne(req: Request, res: Response) {
-    const athlete = await repository.findOne({id: req.params.id}) 
-    // If no athlete is found, return a 404 response
-    if (!athlete){
-        res.status(404).send({message: "Athlete not found"})
+    try{
+        const id = Number.parseInt(req.params.id)
+        const athlete = await em.findOneOrFail(Athlete, {id})
+        res.status(200).json({message: 'finded athlete', data: athlete})
+    }catch (error: any){
+        res.status(500).json({message: error.message})
     }
-    res.json({data: athlete})
 }
 
 
 async function add(req: Request, res: Response){
-    // Destructure the request body to extract the athlete properties
-    const {id, email,password, phone_number, user_type, created_at, is_active, last_login, first_name, last_name,date_birth,nationality, sport, position, is_signed} = req.body
-    
-    // Create a new Athlete object with the provided details
-    const new_athlete = new Athlete(
-        id, email,password, phone_number, user_type, created_at, is_active, last_login, first_name, last_name,date_birth,nationality,sport, position, is_signed)
-    await repository.add(new_athlete)
-    res.status(201).send({message: 'Athlete created', data: new_athlete})
+    try{
+        const newAthlete = em.create(Athlete, req.body)
+        await em.flush()
+        res.status(201).json({message: 'Athlete created', data: newAthlete})
+    }catch (error: any){
+        res.status(500).json({message: error.message})
+    }
 }
 
 
 async function update(req: Request, res: Response){
-    const athlete = await repository.update(req.params.id, req.body)
-    
-    if (!athlete){
-        res.status(404).send({message: 'Athlete not found'})
-    }else{  
-        res.status(200).send({message: 'Athlete updated successfully', data: athlete})
+    try{
+        const id = Number.parseInt(req.params.id)
+        const athleteToUpdate = em.getReference(Athlete, id)
+        em.assign(athleteToUpdate, req.body)
+        await em.flush()
+        res.status(200).json({message: 'Athlete updated'})
+    }catch (error: any){
+        res.status(500).json({message: error.message})
     }
 }
 
 
 async function remove(req: Request, res: Response){
-    const athlete = await repository.delete({id: req.params.id})
-    
-    if (!athlete){
-        res.status(404).send({message: 'Athlete not found'})
-    }
-    else{
-        res.status(200).send({message: 'Athlete deleted successfully'})
+    try{
+        const id = Number.parseInt(req.params.id)
+        const athlete = em.getReference(Athlete, id)
+        await em.removeAndFlush(athlete)
+        res.status(200).json({message: 'Athlete removed'})
+    }catch (error: any){
+        res.status(500).json({message: error.message})
     }
 }
 
