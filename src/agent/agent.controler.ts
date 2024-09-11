@@ -1,54 +1,63 @@
 import { Request, Response } from 'express';
 import { Agent } from './agent.entity.js';
-import { AgentRepository } from './agent.repository.js';
-import { PassThrough } from 'stream';
-
-const repository = new AgentRepository();
-
-function findAll(req: Request, res: Response) {
-    res.json({data: repository.findAll()});
-}
+import { orm } from '../shared/db/orm.js'
 
 
-function findOne(req: Request, res: Response) {
-    const agent = repository.findOne({id: req.params.id});
-    // If no agent is found, return a 404 response
-    if (!agent){
-        res.status(404).send({message: "Agent not found"});
-    }
-    res.json({data: agent});
-}
+const em = orm.em
 
-
-function add(req: Request, res:Response){
-    // Destructure the request body to extract the agent properties
-    const {id, email,password, phone_number, user_type, created_at, is_active, last_login, first_name, last_name, club_id} = req.body;
-    
-    // Create a new Agent object with the provided details
-    const new_agent = new Agent(id, email, password, phone_number, user_type, created_at, is_active, last_login, first_name, last_name, club_id);
-    repository.add(new_agent);
-    res.status(201).send({message: 'Agent created', data: new_agent});
-}
-
-
-function update(req: Request, res: Response){
-    const agent = repository.update(req.params.id, req.body);
-    
-    if (!agent){
-        res.status(404).send({message: 'Agent not found'});
-    }else{
-        res.status(200).send({message: 'Agent updated successfully', data: agent});
+async function findAll(req: Request, res: Response) {
+    try{
+        const agents = await em.find(Agent, {})
+        res.status(200).json({message: 'finded all agents',data: agents})
+    }catch (error: any){
+        res.status(500).json({message: error.message})
     }
 }
 
 
-function remove(req: Request, res: Response){
-    const agent = repository.delete({id: req.params.id});
-    
-    if (!agent){
-        res.status(404).send({message: 'Agent not found'});
-    }else{
-        res.status(200).send({message: 'Agent deleted successfully'});
+async function findOne(req: Request, res: Response) {
+    try{
+        const id = Number.parseInt(req.params.id)
+        const agent = await em.findOneOrFail(Agent, {id})
+        res.status(200).json({message: 'finded agent', data: agent})
+    }catch (error: any){
+        res.status(500).json({message: error.message})
+    }
+}
+
+
+async function add(req: Request, res:Response){
+    try{
+        const newAgent = em.create(Agent, req.body)
+        await em.flush()
+        res.status(201).json({message: 'Agent created', data: newAgent})
+    }catch (error: any){
+        res.status(500).json({message: error.message})
+    }
+}
+
+
+async function update(req: Request, res: Response){
+    try{
+        const id = Number.parseInt(req.params.id)
+        const agentToUpdate = em.getReference(Agent, id)
+        em.assign(agentToUpdate, req.body)
+        await em.flush()
+        res.status(200).json({message: 'Agent updated'})
+    }catch (error: any){
+        res.status(500).json({message: error.message})
+    }
+}
+
+
+async function remove(req: Request, res: Response){
+    try{
+        const id = Number.parseInt(req.params.id)
+        const agentToRemove = em.getReference(Agent, id)
+        await em.removeAndFlush(agentToRemove)
+        res.status(200).json({message: 'Agent removed'})
+    }catch (error: any){
+        res.status(500).json({message: error.message})
     }
 }
 

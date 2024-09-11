@@ -1,55 +1,63 @@
 import { Club } from './club.entity.js';
 import { Request, Response } from 'express';
-import { ClubRepository } from './club.repository.js';
+import { orm } from '../shared/db/orm.js';
 
-const repository = new ClubRepository();
+
+const em = orm.em;
+
 
 async function findAll(req: Request, res: Response) {
-    res.json({data: await repository.findAll()});
-}
+    try{
+        const clubs = await em.find(Club, {})
+        res.status(200).json({message: 'finded all clubs',data: clubs})
+    }catch (error: any){
+        res.status(500).json({message: error.message})
+    }}
 
 
 async function findOne(req: Request, res: Response) {
-    const club = await repository.findOne({id: req.params.id});
-    // If no club is found, return a 404 response
-    if (!club) {
-        res.status(404).send({message: 'Club not found'});
+    try{
+        const id = Number.parseInt(req.params.id)
+        const club = await em.findOneOrFail(Club, {id})
+        res.status(200).json({message: 'finded club', data: Club})
+    }catch (error: any){
+        res.status(500).json({message: error.message})
     }
-    res.json({data: club});
 }
 
 
 async function add(req: Request, res: Response){
-    // Destructure the request body to extract the club properties
-    const {id, email, password, phone_number, type, created_at, is_active, last_login, name, address, opening_date} = req.body;
-    
-    // Create a new Athlete object with the provided details
-    const new_club = new Club(
-        id, email, password, phone_number, type, created_at, is_active, last_login, name, address, opening_date
-    );
-    await repository.add(new_club);
-    res.status(201).send({message: 'Club created', data: new_club});
+    try{
+        const newClub = em.create(Club, req.body)
+        await em.flush()
+        res.status(201).json({message: 'Club created', data: newClub})
+    }catch (error: any){
+        res.status(500).json({message: error.message})
+    }
 }
 
 
 async function update(req: Request, res: Response){
-    const club =  await repository.update(req.params.id, req.body);
-    
-    if (!club){
-        res.status(404).send({message: 'Club not found'});
-    }else{
-        res.status(200).send({message: 'Club updated successfully', data: club});
+    try{
+        const id = Number.parseInt(req.params.id)
+        const clubToUpdate = em.getReference(Club, id)
+        em.assign(clubToUpdate, req.body)
+        await em.flush()
+        res.status(200).json({message: 'Club updated'})
+    }catch (error: any){
+        res.status(500).json({message: error.message})
     }
 }
 
 
 async function remove(req: Request, res: Response){
-    const club = await repository.delete({id: req.params.id});
-    
-    if (!club){
-        res.status(404).send({message: 'Club not found'});
-    }else{
-        res.status(200).send({message: 'Club deleted successfully'});
+    try{
+        const id = Number.parseInt(req.params.id)
+        const clubToRemove = em.getReference(Club, id)
+        await em.removeAndFlush(clubToRemove)
+        res.status(200).json({message: 'Club removed'})
+    }catch (error: any){
+        res.status(500).json({message: error.message})
     }
 }
 
