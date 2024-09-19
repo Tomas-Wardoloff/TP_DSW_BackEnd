@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { User } from './users.entity.js';
+import { User } from './user.entity.js';
 import { orm } from '../shared/db/orm.js'
 
 

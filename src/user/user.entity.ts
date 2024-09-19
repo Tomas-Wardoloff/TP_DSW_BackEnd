@@ -6,20 +6,20 @@ export class User extends BaseEntity {
   @Property({nullable: false, unique: true})
   email!: string;
 
-  @Property()
+  @Property({length: 256})
   password!: string;
   
-  @Property()
-  phone_number!: string;
+  @Property({nullable: true})
+  phoneNumber!: string;
   
   @Enum(() => UserType)
-  user_type!: UserType;
+  userType!: UserType;
   
   @Property({default: true})
-  is_active!: boolean;
+  isActive!: boolean;
   
-  @Property()
-  last_login!: Date;
+  @Property({nullable: true})
+  lastLogin!: Date;
 }
 
 export enum UserType {

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { findAll, findOne, add, update, remove } from './athlete.controler.js';
+import { findAll, findOne, add, update, remove } from './athlete.controller.js';
 
 export const athleteRouter = Router();
 

@@ -1,29 +1,29 @@
-import { User } from "../users/users.entity.js";
+import { User } from "../user/user.entity.js";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 import {Cascade, Entity, OneToOne, Property } from "@mikro-orm/core";
 
 @Entity()
 export class Athlete extends BaseEntity {
-  @Property({nullable: false})
-  first_name!: string;
+  @Property()
+  firstName!: string;
   
-  @Property({nullable: false})
-  last_name!: string;
+  @Property()
+  lastName!: string;
   
-  @Property({nullable: false})
-  birth_date!: Date;
+  @Property()
+  birthDate!: Date;
   
-  @Property({nullable: false})
+  @Property()
   nationality!: string;
   
-  @Property({nullable: false})
+  @Property()
   sport!: string;
   
-  @Property({nullable: false})
+  @Property()
   position!: string;
   
-  @Property({default: false, nullable: false})
-  is_signed!: boolean;
+  @Property({default: false})
+  isSigned!: boolean;
 
   @OneToOne(() => User, {nullable: false, cascade: [Cascade.ALL]})
   user!: User;

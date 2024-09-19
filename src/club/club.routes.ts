@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { findAll, findOne, add, update, remove } from './club.controler.js';
+import { findAll, findOne, add, update, remove } from './club.controller.js';
 
 export const clubRouter = Router();
 

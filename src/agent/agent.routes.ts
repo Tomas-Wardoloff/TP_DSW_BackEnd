@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { findAll, findOne, add, update, remove } from './agent.controler.js';
+import { findAll, findOne, add, update, remove } from './agent.controller.js';
 
 export const agentRouter = Router();
 

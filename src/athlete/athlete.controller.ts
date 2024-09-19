@@ -7,8 +7,8 @@ const em = orm.em
 
 async function findAll(req: Request, res: Response) {
     try{
-        const athletes = await em.find(Athlete, {})
-        res.status(200).json({message: 'finded all athletes',data: athletes})
+        const athletes = await em.find(Athlete, {}, {populate: ['user']})
+        res.status(200).json({message: 'found all athletes',data: athletes})
     }catch (error: any){
         res.status(500).json({message: error.message})
     }
@@ -18,8 +18,8 @@ async function findAll(req: Request, res: Response) {
 async function findOne(req: Request, res: Response) {
     try{
         const id = Number.parseInt(req.params.id)
-        const athlete = await em.findOneOrFail(Athlete, {id})
-        res.status(200).json({message: 'finded athlete', data: athlete})
+        const athlete = await em.findOneOrFail(Athlete, {id}, {populate: ['user']})
+        res.status(200).json({message: 'found athlete', data: athlete})
     }catch (error: any){
         res.status(500).json({message: error.message})
     }
@@ -40,7 +40,7 @@ async function add(req: Request, res: Response){
 async function update(req: Request, res: Response){
     try{
         const id = Number.parseInt(req.params.id)
-        const athleteToUpdate = em.getReference(Athlete, id)
+        const athleteToUpdate = await em.findOneOrFail(Athlete, {id})
         em.assign(athleteToUpdate, req.body)
         await em.flush()
         res.status(200).json({message: 'Athlete updated'})
@@ -53,8 +53,8 @@ async function update(req: Request, res: Response){
 async function remove(req: Request, res: Response){
     try{
         const id = Number.parseInt(req.params.id)
-        const athlete = em.getReference(Athlete, id)
-        await em.removeAndFlush(athlete)
+        const athleteToRemove = em.getReference(Athlete, id)
+        await em.removeAndFlush(athleteToRemove)
         res.status(200).json({message: 'Athlete removed'})
     }catch (error: any){
         res.status(500).json({message: error.message})

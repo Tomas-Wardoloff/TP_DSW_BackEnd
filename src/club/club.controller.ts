@@ -8,8 +8,8 @@ const em = orm.em;
 
 async function findAll(req: Request, res: Response) {
     try{
-        const clubs = await em.find(Club, {})
-        res.status(200).json({message: 'finded all clubs',data: clubs})
+        const clubs = await em.find(Club, {}, {populate: ['user']})
+        res.status(200).json({message: 'found all clubs',data: clubs})
     }catch (error: any){
         res.status(500).json({message: error.message})
     }}
@@ -18,8 +18,8 @@ async function findAll(req: Request, res: Response) {
 async function findOne(req: Request, res: Response) {
     try{
         const id = Number.parseInt(req.params.id)
-        const club = await em.findOneOrFail(Club, {id})
-        res.status(200).json({message: 'finded club', data: Club})
+        const club = await em.findOneOrFail(Club, {id}, {populate: ['user']})
+        res.status(200).json({message: 'found club', data: Club})
     }catch (error: any){
         res.status(500).json({message: error.message})
     }
