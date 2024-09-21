@@ -28,9 +28,17 @@ async function findOne(req: Request, res: Response) {
 
 async function add(req: Request, res:Response){
     try{
-        const newAgent = em.create(Agent, req.body)
-        await em.flush()
-        res.status(201).json({message: 'Agent created', data: newAgent})
+        const { user } = req.body
+        const relatedUser = await em.findOneOrFail('User', {id: user})
+        if (relatedUser){
+            const existingAgent = await em.findOne(Agent, {user: relatedUser})
+            if (existingAgent){
+                return res.status(400).json({message: 'This user already has an agent profile.'})
+            }
+            const newAgent = em.create(Agent, req.body)
+            await em.flush()
+            res.status(201).json({message: 'Agent created', data: newAgent})
+        }
     }catch (error: any){
         res.status(500).json({message: error.message})
     }
@@ -40,7 +48,7 @@ async function add(req: Request, res:Response){
 async function update(req: Request, res: Response){
     try{
         const id = Number.parseInt(req.params.id)
-        const agentToUpdate = em.getReference(Agent, id)
+        const agentToUpdate = em.findOneOrFail(Agent, {id})
         em.assign(agentToUpdate, req.body)
         await em.flush()
         res.status(200).json({message: 'Agent updated'})

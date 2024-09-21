@@ -28,9 +28,19 @@ async function findOne(req: Request, res: Response) {
 
 async function add(req: Request, res: Response){
     try{
-        const newAthlete = em.create(Athlete, req.body)
-        await em.flush()
-        res.status(201).json({message: 'Athlete created', data: newAthlete})
+        const { user } = req.body
+        const relatedUser = await em.findOneOrFail('User', {id: user})
+        if (relatedUser){
+            const existingAthlete = await em.findOne(Athlete, { user: relatedUser });
+
+            if (existingAthlete){
+                return res.status(400).json({ message: 'This user already has an athlete profile.' });
+            }
+            
+            const newAthlete = em.create(Athlete, req.body);
+            await em.flush()
+            res.status(201).json({message: 'Athlete created', data: newAthlete})
+        }
     }catch (error: any){
         res.status(500).json({message: error.message})
     }
