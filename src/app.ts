@@ -7,6 +7,7 @@ import { agentRouter } from "./agent/agent.routes.js"
 import { orm, syncSchema } from "./shared/db/orm.js"
 import { RequestContext } from '@mikro-orm/core'
 import { userRouter } from './user/user.routes.js'
+import { postRouter } from './post/post.routes.js'
 
 dotenv.config()
 
@@ -21,6 +22,7 @@ app.use('/api/athletes', athleteRouter)
 app.use('/api/clubs', clubRouter)
 app.use('/api/agents', agentRouter)
 app.use('/api/users', userRouter)
+app.use('/api/posts/', postRouter)
 
 app.use((_, res) => {
     return res.status(404).send({message: "Not found"})
