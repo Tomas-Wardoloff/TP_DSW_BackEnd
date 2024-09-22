@@ -8,7 +8,12 @@ const em = orm.em;
 
 async function findAll(req: Request, res: Response) {
     try{
-        const clubs = await em.find(Club, {}, {populate: ['user']})
+        const { name } = req.query;
+        const filters: any = {};
+
+        if (name) filters.name = name  ; 
+
+        const clubs = await em.find(Club, filters, {populate: ['user']})
         res.status(200).json({message: 'found all clubs',data: clubs})
     }catch (error: any){
         res.status(500).json({message: error.message})
