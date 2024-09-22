@@ -7,7 +7,15 @@ const em = orm.em
 
 async function findAll(req: Request, res: Response) {
     try{
-        const athletes = await em.find(Athlete, {}, {populate: ['user']})
+        const { sport, position, isSigned, nationality} = req.query;
+        const filters: any = {};
+
+        if (sport) filters.sport = sport;
+        if (position) filters.position = position;
+        if (isSigned) filters.isSigned = isSigned;
+        if (nationality) filters.nationality = nationality;
+
+        const athletes = await em.find(Athlete, filters, {populate: ['user']})
         res.status(200).json({message: 'found all athletes',data: athletes})
     }catch (error: any){
         res.status(500).json({message: error.message})
