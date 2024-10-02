@@ -1,18 +1,22 @@
-import { Entity, Enum, OneToOne } from "@mikro-orm/core";
+import { Entity, Enum, ManyToOne, Property, Unique } from "@mikro-orm/core";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
-import { User } from "../users/users.entity.js";
+import { User } from "../user/user.entity.js";
 
 
 @Entity()
+@Unique({ properties: ['senderUser', 'receiverUser'] })
 export class FriendRequest extends BaseEntity {
-    @OneToOne(() => User, {nullable: false})
-    sender_user!: User;
+    @ManyToOne(() => User)
+    senderUser!: User;
     
-    @OneToOne(() => User, {nullable: false})
-    receiver_user!: User;
+    @ManyToOne(() => User)
+    receiverUser!: User;
     
     @Enum(() => RequestStatus)
     status!: RequestStatus;
+
+    @Property({onCreate: () => new Date()})
+    requestDate!: Date;
 }
 
 export enum RequestStatus {
