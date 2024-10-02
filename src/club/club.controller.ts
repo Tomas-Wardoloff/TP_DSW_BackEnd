@@ -9,9 +9,9 @@ const em = orm.em;
 async function findAll(req: Request, res: Response) {
     try{
         const { name } = req.query;
-        const filters: any = {};
-
-        if (name) filters.name = name  ; 
+        let filters: Partial<Club> = {
+            name: name as string | undefined
+        };
 
         const clubs = await em.find(Club, filters, {populate: ['user']})
         res.status(200).json({message: 'found all clubs',data: clubs})
