@@ -14,6 +14,6 @@ export class Agent extends BaseEntity {
     @OneToOne(() => User, {nullable: false, cascade: [Cascade.ALL]})
     user!: User;
     
-    @ManyToOne(() => Club, { nullable: true, mapToPk: true })
-    clubId!: number;
+    @ManyToOne(() => Club, { nullable: true, cascade: [Cascade.ALL]})
+    club!: Club;
 }
