@@ -14,9 +14,6 @@ export class Message extends BaseEntity {
     @Property({length: 500})
     message!: string;
 
-    @Property({onCreate: () => new Date()})
-    sendDate!: Date;
-
     @Property()
     readDate!: Date;
 }

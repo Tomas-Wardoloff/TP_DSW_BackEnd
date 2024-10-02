@@ -14,9 +14,6 @@ export class FriendRequest extends BaseEntity {
     
     @Enum(() => RequestStatus)
     status!: RequestStatus;
-
-    @Property({onCreate: () => new Date()})
-    requestDate!: Date;
 }
 
 export enum RequestStatus {
