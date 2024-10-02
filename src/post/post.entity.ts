@@ -1,16 +1,16 @@
-import { Entity, OneToOne, Property } from "@mikro-orm/core";
+import { User } from "../user/user.entity.js";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
-import { User } from "../users/users.entity.js";
+import { Cascade, Entity, ManyToOne, Property } from "@mikro-orm/core";
 
 
 @Entity()
 export class Post extends BaseEntity {
-    @OneToOne(() => User, {nullable: false})
-    author_user!: User;
+    @ManyToOne(() => User, {nullable: false, cascade: [Cascade.ALL]})
+    author!: User;
     
-    @Property({nullable: false, length: 50})
+    @Property({length: 50})
     title!: string;
     
-    @Property({nullable: false, length: 500})
+    @Property({length: 500})
     content!: string;
 }
