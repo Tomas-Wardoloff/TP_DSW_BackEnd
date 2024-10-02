@@ -33,8 +33,8 @@ async function findOne(req: Request, res: Response) {
 
 async function add(req: Request, res: Response){
     try{
-        const {user} = req.body
-        const relatedUser = await em.findOneOrFail('User', {id: user})
+        const { userId } = req.body
+        const relatedUser = await em.findOneOrFail('User', {id: userId })
         if (relatedUser){
             const existingClub = await em.findOne(Club, {user: relatedUser})
             if (existingClub){
