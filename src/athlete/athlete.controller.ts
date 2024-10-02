@@ -8,12 +8,12 @@ const em = orm.em
 async function findAll(req: Request, res: Response) {
     try{
         const { sport, position, isSigned, nationality} = req.query;
-        const filters: any = {};
-
-        if (sport) filters.sport = sport;
-        if (position) filters.position = position;
-        if (isSigned) filters.isSigned = isSigned;
-        if (nationality) filters.nationality = nationality;
+        let filters: Partial<Athlete> = {
+            sport: sport as string | undefined,
+            position: position as string | undefined,
+            isSigned: isSigned as boolean | undefined,
+            nationality: nationality as string | undefined
+        };
 
         const athletes = await em.find(Athlete, filters, {populate: ['user']})
         res.status(200).json({message: 'found all athletes',data: athletes})
