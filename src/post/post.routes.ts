@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { findAll, findOne, add, update, remove } from './post.controller';
+import { findAll, findOne, add, remove } from './post.controller.js';
 
 export const postRouter = Router();
 
@@ -9,7 +9,5 @@ postRouter.get('/', findAll);
 postRouter.get('/:id', findOne);
 // Define a POST route to add a new Post object
 postRouter.post('/', add);
-// Define a PUT route to update an existing Post object
-postRouter.put('/:id', update);
 // Define a DELETE route to remove an Post object by ID
 postRouter.delete('/:id', remove);
