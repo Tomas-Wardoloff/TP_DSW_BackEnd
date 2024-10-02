@@ -1,16 +1,16 @@
 import { Entity, OneToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
-import { User } from "../users/users.entity.js";
+import { User } from "../user/user.entity.js";
 
 
 @Entity()
 export class Message extends BaseEntity {
-    @OneToOne(() => User, {nullable: false})
-    sender_user!: User;
+    @OneToOne(() => User)
+    senderUser!: User;
     
-    @OneToOne(() => User, {nullable: false})
-    receiver_user!: User;
+    @OneToOne(() => User)
+    receiverUser!: User;
     
-    @Property({nullable: false, length: 500})
+    @Property({length: 500})
     message!: string;
 }
