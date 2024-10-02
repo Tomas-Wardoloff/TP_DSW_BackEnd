@@ -1,6 +1,5 @@
 import { Request, Response } from 'express'
 import { orm } from '../shared/db/orm.js'
-import { User } from '../user/user.entity.js'
 import { Post } from './post.entity.js'
 
 const em = orm.em
@@ -40,7 +39,7 @@ async function add(req: Request, res: Response){
     }
 }
 
-
+// Users does not have the ability to update posts
 async function update(req: Request, res: Response){
     res.status(500).json({message: "Method Not Implemented"})
 }
