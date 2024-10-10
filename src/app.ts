@@ -1,5 +1,6 @@
 import 'reflect-metadata'
 import dotenv from 'dotenv'
+import cors from 'cors'
 import express from "express"
 import { athleteRouter } from "./athlete/athlete.routes.js"
 import { clubRouter } from "./club/club.routes.js"
@@ -12,7 +13,8 @@ import { postRouter } from './post/post.routes.js'
 dotenv.config()
 
 const app = express()
-app.use(express.json())
+
+app.use(express.json(), cors())
 
 app.use((req, res, next) => {
     RequestContext.create(orm.em, next)
