@@ -4,9 +4,9 @@ export abstract class BaseEntity{
     @PrimaryKey()
     id!: number;
 
-    @Property({type: DateTimeType, onCreate: () => new Date()})
+    @Property({onCreate: () => new Date()})
     createdAt = new Date();
     
-    @Property({type: DateTimeType, onUpdate: () => new Date()})
+    @Property({onUpdate: () => new Date()})
     updatedAt = new Date();
 }

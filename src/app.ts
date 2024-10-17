@@ -16,6 +16,10 @@ const app = express()
 
 app.use(express.json(), cors())
 
+app.use(cors({ origin: 'http://localhost:4200' })); // Reemplaza con la URL del frontend si es diferente
+
+
+
 app.use((req, res, next) => {
     RequestContext.create(orm.em, next)
 })

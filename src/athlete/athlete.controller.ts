@@ -16,7 +16,7 @@ async function findAll(req: Request, res: Response) {
         };
 
         const athletes = await em.find(Athlete, filters, {populate: ['user']})
-        res.status(200).json({message: 'found all athletes',data: athletes})
+        res.status(200).json(athletes)
     }catch (error: any){
         res.status(500).json({message: error.message})
     }
@@ -27,7 +27,7 @@ async function findOne(req: Request, res: Response) {
     try{
         const id = Number.parseInt(req.params.id)
         const athlete = await em.findOneOrFail(Athlete, {id}, {populate: ['user']})
-        res.status(200).json({message: 'found athlete', data: athlete})
+        res.status(200).json(athlete)
     }catch (error: any){
         res.status(500).json({message: error.message})
     }
@@ -47,7 +47,7 @@ async function add(req: Request, res: Response){
             
             const newAthlete = em.create(Athlete, req.body);
             await em.flush()
-            res.status(201).json({message: 'Athlete created', data: newAthlete})
+            res.status(201).json(newAthlete)
         }
     }catch (error: any){
         res.status(500).json({message: error.message})
@@ -61,7 +61,9 @@ async function update(req: Request, res: Response){
         const athleteToUpdate = await em.findOneOrFail(Athlete, {id})
         em.assign(athleteToUpdate, req.body)
         await em.flush()
-        res.status(200).json({message: 'Athlete updated'})
+        const message = 'Athlete updated'
+
+        res.status(200).json(message)
     }catch (error: any){
         res.status(500).json({message: error.message})
     }
@@ -73,7 +75,9 @@ async function remove(req: Request, res: Response){
         const id = Number.parseInt(req.params.id)
         const athleteToRemove = em.getReference(Athlete, id)
         await em.removeAndFlush(athleteToRemove)
-        res.status(200).json({message: 'Athlete removed'})
+        const message = 'Athlete removed'
+
+        res.status(200).json(message)
     }catch (error: any){
         res.status(500).json({message: error.message})
     }

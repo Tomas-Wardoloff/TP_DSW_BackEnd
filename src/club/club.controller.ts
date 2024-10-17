@@ -14,7 +14,7 @@ async function findAll(req: Request, res: Response) {
         };
 
         const clubs = await em.find(Club, filters, {populate: ['user']})
-        res.status(200).json({message: 'found all clubs',data: clubs})
+        res.status(200).json(clubs)
     }catch (error: any){
         res.status(500).json({message: error.message})
     }}
@@ -24,7 +24,7 @@ async function findOne(req: Request, res: Response) {
     try{
         const id = Number.parseInt(req.params.id)
         const club = await em.findOneOrFail(Club, {id}, {populate: ['user']})
-        res.status(200).json({message: 'found club', data: club})
+        res.status(200).json(club)
     }catch (error: any){
         res.status(500).json({message: error.message})
     }
@@ -43,7 +43,7 @@ async function add(req: Request, res: Response){
 
         const newClub = em.create(Club, req.body)
         await em.flush()
-        res.status(201).json({message: 'Club created', data: newClub})
+        res.status(201).json(newClub)
     }
     }catch (error: any){
         res.status(500).json({message: error.message})
@@ -57,7 +57,9 @@ async function update(req: Request, res: Response){
         const clubToUpdate = em.findOneOrFail(Club, {id})
         em.assign(clubToUpdate, req.body)
         await em.flush()
-        res.status(200).json({message: 'Club updated'})
+        const message = 'Club updated'
+
+        res.status(200).json(message)
     }catch (error: any){
         res.status(500).json({message: error.message})
     }
@@ -69,7 +71,8 @@ async function remove(req: Request, res: Response){
         const id = Number.parseInt(req.params.id)
         const clubToRemove = em.getReference(Club, id)
         await em.removeAndFlush(clubToRemove)
-        res.status(200).json({message: 'Club removed'})
+        const message = 'Club removed'
+        res.status(200).json(message)
     }catch (error: any){
         res.status(500).json({message: error.message})
     }

@@ -23,7 +23,7 @@ export class User extends BaseEntity {
 }
 
 export enum UserType {
-  ATHLETE = 'athlete',
-  CLUB = 'club',
-  AGENT = 'agent'
+  ATHLETE = 'ATHLETE',
+  CLUB = 'CLUB',
+  AGENT = 'AGENT'
 }
