@@ -17,8 +17,14 @@ async function findAll(req: Request, res: Response) {
             nationality: nationality as string | undefined
         };
 
-        const athletes = await em.find(Athlete, filters, {populate: ['user']})
-        res.status(200).json(athletes)
+        const athletes = await em.find(Athlete, filters/*, {populate: ['user']}*/)
+        const result = athletes.map(athlete => ({
+            ...athlete,
+            user: athlete.user.id // Devolvemos solo el ID del usuario
+        }));
+
+        
+        res.status(200).json(result)
     }catch (error: any){
         res.status(500).json({message: error.message})
     }
@@ -29,7 +35,11 @@ async function findOne(req: Request, res: Response) {
     try{
         const id = Number.parseInt(req.params.id)
         const athlete = await em.findOneOrFail(Athlete, {id}, {populate: ['user']})
-        res.status(200).json(athlete)
+        const result = {
+            ...athlete,
+            user: athlete.user.id // Devolvemos solo el ID del usuario
+        };
+        res.status(200).json(result)
     }catch (error: any){
         res.status(500).json({message: error.message})
     }
@@ -45,7 +55,11 @@ async function add(req: Request, res: Response){
             req.body.user = relatedUser;
             const newAthlete = em.create(Athlete, req.body);
             await em.flush()
-            res.status(201).json(newAthlete)
+            const result = {
+                ...newAthlete,
+                user: newAthlete.user.id
+            };
+            res.status(201).json(result)
         }
     }catch (error: any){
         res.status(500).json({message: error.message})

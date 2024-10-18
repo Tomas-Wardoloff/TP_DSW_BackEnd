@@ -26,5 +26,5 @@ export class Athlete extends BaseEntity {
   isSigned!: boolean;
 
   @OneToOne(() => User, {nullable: false, cascade: [Cascade.ALL]})
-  user?: User;
+  user!: User;
 }
