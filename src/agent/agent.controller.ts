@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { Agent } from './agent.entity.js';
 import { orm } from '../shared/db/orm.js'
+import { User } from '../user/user.entity.js'
+
 
 
 const em = orm.em
@@ -28,16 +30,14 @@ async function findOne(req: Request, res: Response) {
 
 async function add(req: Request, res:Response){
     try{
-        const { userId } = req.body
-        const relatedUser = await em.findOneOrFail('User', {id: userId})
+        await em.flush()
+        const  id  = req.body.userId
+        const relatedUser = await em.findOneOrFail(User, id)
         if (relatedUser){
-            const existingAgent = await em.findOne(Agent, {user: relatedUser})
-            if (existingAgent){
-                return res.status(400).json({message: 'This user already has an agent profile.'})
-            }
-            const newAgent = em.create(Agent, req.body)
+            req.body.user = relatedUser;
+            const newAgent = em.create(Agent, req.body);
             await em.flush()
-            res.status(201).json({message: 'Agent created', data: newAgent})
+            res.status(201).json(newAgent)
         }
     }catch (error: any){
         res.status(500).json({message: error.message})

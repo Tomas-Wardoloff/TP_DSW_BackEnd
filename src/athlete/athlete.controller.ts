@@ -1,6 +1,8 @@
 import { Request, Response } from 'express'
 import { Athlete } from './athlete.entity.js'
 import { orm } from '../shared/db/orm.js'
+import { User } from '../user/user.entity.js'
+
 
 
 const em = orm.em
@@ -36,15 +38,11 @@ async function findOne(req: Request, res: Response) {
 
 async function add(req: Request, res: Response){
     try{
-        const { userId } = req.body
-        const relatedUser = await em.findOneOrFail('User', {id: userId})
+        await em.flush()
+        const  id  = req.body.userId
+        const relatedUser = await em.findOneOrFail(User, id)
         if (relatedUser){
-            const existingAthlete = await em.findOne(Athlete, { user: relatedUser });
-
-            if (existingAthlete){
-                return res.status(400).json({ message: 'This user already has an athlete profile.' });
-            }
-            
+            req.body.user = relatedUser;
             const newAthlete = em.create(Athlete, req.body);
             await em.flush()
             res.status(201).json(newAthlete)

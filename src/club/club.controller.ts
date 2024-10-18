@@ -1,6 +1,7 @@
 import { Club } from './club.entity.js';
 import { Request, Response } from 'express';
 import { orm } from '../shared/db/orm.js';
+import { User } from '../user/user.entity.js'
 
 
 const em = orm.em;
@@ -33,17 +34,14 @@ async function findOne(req: Request, res: Response) {
 
 async function add(req: Request, res: Response){
     try{
-        const { userId } = req.body
-        const relatedUser = await em.findOneOrFail('User', {id: userId })
-        if (relatedUser){
-            const existingClub = await em.findOne(Club, {user: relatedUser})
-            if (existingClub){
-                return res.status(400).json({message: 'This user already has a club profile.'})
-        }
-
-        const newClub = em.create(Club, req.body)
         await em.flush()
-        res.status(201).json(newClub)
+        const  id  = req.body.userId
+        const relatedUser = await em.findOneOrFail(User, id)
+        if (relatedUser){
+            req.body.user = relatedUser;
+            const newClub = em.create(Club, req.body);
+            await em.flush()
+            res.status(201).json(newClub)
     }
     }catch (error: any){
         res.status(500).json({message: error.message})
