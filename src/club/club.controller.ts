@@ -11,10 +11,10 @@ async function findAll(req: Request, res: Response) {
     try{
         const { name } = req.query;
         let filters: Partial<Club> = {
-            name: name as string | undefined
+            //name: name as string | undefined
         };
 
-        const clubs = await em.find(Club, filters, {populate: ['user']})
+        const clubs = await em.find(Club, filters/*, {populate: ['user']}*/)
         res.status(200).json(clubs)
     }catch (error: any){
         res.status(500).json({message: error.message})

@@ -11,10 +11,7 @@ async function findAll(req: Request, res: Response) {
     try{
         const { sport, position, isSigned, nationality} = req.query;
         let filters: Partial<Athlete> = {
-            sport: sport as string | undefined,
-            position: position as string | undefined,
-            isSigned: isSigned as boolean | undefined,
-            nationality: nationality as string | undefined
+
         };
 
         const athletes = await em.find(Athlete, filters/*, {populate: ['user']}*/)

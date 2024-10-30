@@ -9,8 +9,12 @@ const em = orm.em
 
 async function findAll(req: Request, res: Response) {
     try{
-        const agents = await em.find(Agent, {}, {populate: ['user']})
-        res.status(200).json({message: 'found all agents',data: agents})
+        let filters: Partial<Agent> = {
+            //name: name as string | undefined
+        };
+
+        const agents = await em.find(Agent, filters/*, {populate: ['user']}*/)
+        res.status(200).json(agents)
     }catch (error: any){
         res.status(500).json({message: error.message})
     }
@@ -21,7 +25,7 @@ async function findOne(req: Request, res: Response) {
     try{
         const id = Number.parseInt(req.params.id)
         const agent = await em.findOneOrFail(Agent, {id}, {populate: ['user']})
-        res.status(200).json({message: 'found agent', data: agent})
+        res.status(200).json(agent)
     }catch (error: any){
         res.status(500).json({message: error.message})
     }

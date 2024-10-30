@@ -1,7 +1,7 @@
 import { Club } from "../club/club.entity.js";
 import { User } from "../user/user.entity.js";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
-import { ManyToOne, Entity, OneToOne, Property, Cascade } from "@mikro-orm/core";
+import { Entity, OneToOne, Property, Cascade } from "@mikro-orm/core";
 
 @Entity()
 export class Agent extends BaseEntity {
@@ -14,6 +14,6 @@ export class Agent extends BaseEntity {
     @OneToOne(() => User, {nullable: false, cascade: [Cascade.ALL]})
     user!: User;
     
-    //@ManyToOne(() => Club, { nullable: true, cascade: [Cascade.ALL]})
-    //club!: Club;
+    @OneToOne(() => Club, { nullable: true, cascade: [Cascade.ALL]})
+    club!: Club;
 }
