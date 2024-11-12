@@ -32,7 +32,6 @@ async function findOne(req: Request, res: Response) {
     try{
         const id = Number.parseInt(req.params.id)
         const athlete = await em.findOneOrFail(Athlete, { id }, {populate: ['user']})
-        res.status(200).json(athlete)
         const result = {
             ...athlete,
             user: athlete.user.id // Devolvemos solo el ID del usuario
