@@ -34,10 +34,14 @@ async function findOne(req: Request, res: Response) {
 
 async function add(req: Request, res: Response){
     try{
-        await em.flush()
-        const  id  = req.body.userId
-        const relatedUser = await em.findOneOrFail(User, id)
+        const  { userId }  = req.body
+        const relatedUser = await em.findOneOrFail(User, {id: userId})
         if (relatedUser){
+            /* const existingClub = await em.findOne(Club, {user: relatedUser})
+            if (existingClub){
+                return res.status(400).json({message: 'This user already has a club profile.'})
+            }*/
+
             req.body.user = relatedUser;
             const newClub = em.create(Club, req.body);
             await em.flush()
@@ -55,9 +59,7 @@ async function update(req: Request, res: Response){
         const clubToUpdate = em.findOneOrFail(Club, {id})
         em.assign(clubToUpdate, req.body)
         await em.flush()
-        const message = 'Club updated'
-
-        res.status(200).json(message)
+        res.status(200).json('Club updated')
     }catch (error: any){
         res.status(500).json({message: error.message})
     }
@@ -69,8 +71,7 @@ async function remove(req: Request, res: Response){
         const id = Number.parseInt(req.params.id)
         const clubToRemove = em.getReference(Club, id)
         await em.removeAndFlush(clubToRemove)
-        const message = 'Club removed'
-        res.status(200).json(message)
+        res.status(200).json('Club removed')
     }catch (error: any){
         res.status(500).json({message: error.message})
     }
