@@ -51,7 +51,7 @@ async function add(req: Request, res: Response){
 async function update(req: Request, res: Response){
     try{
         const id = Number.parseInt(req.params.id)
-        const clubToUpdate = em.findOneOrFail(Club, {id})
+        const clubToUpdate = await em.findOneOrFail(Club, {id})
         em.assign(clubToUpdate, req.body)
         await em.flush()
         res.status(200).json({message: 'Club updated'})

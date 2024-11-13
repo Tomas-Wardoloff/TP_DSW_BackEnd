@@ -9,7 +9,7 @@ const em = orm.em
 
 async function findAll(req: Request, res: Response) {
     try{
-        const agents = await em.find(Agent, {}, {populate: ['user']})
+        const agents = await em.find(Agent, {}, {populate: ['user', 'club']})
         res.status(200).json({message: 'found all agents', data: agents})
     }catch (error: any){
         res.status(500).json({message: error.message})
@@ -20,8 +20,8 @@ async function findAll(req: Request, res: Response) {
 async function findOne(req: Request, res: Response) {
     try{
         const id = Number.parseInt(req.params.id)
-        const agent = await em.findOneOrFail(Agent, {id}, {populate: ['user']})
-        res.status(200).json(agent)
+        const agent = await em.findOneOrFail(Agent, {id}, {populate: ['user', 'club']})
+        res.status(200).json({message: 'found agent', data: agent})
     }catch (error: any){
         res.status(500).json({message: error.message})
     }
@@ -39,7 +39,7 @@ async function add(req: Request, res:Response){
             req.body.user = relatedUser;
             const newAgent = em.create(Agent, req.body)
             await em.flush()
-            res.status(201).json(newAgent)
+            res.status(201).json({message: 'Agent created', data: newAgent})
         }
     }catch (error: any){
         res.status(500).json({message: error.message})
@@ -50,7 +50,7 @@ async function add(req: Request, res:Response){
 async function update(req: Request, res: Response){
     try{
         const id = Number.parseInt(req.params.id)
-        const agentToUpdate = em.findOneOrFail(Agent, {id})
+        const agentToUpdate = await em.findOneOrFail(Agent, {id})
         em.assign(agentToUpdate, req.body)
         await em.flush()
         res.status(200).json({message: 'Agent updated'})
