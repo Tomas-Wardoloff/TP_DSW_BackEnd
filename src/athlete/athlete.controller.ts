@@ -9,13 +9,18 @@ const em = orm.em
 
 async function findAll(req: Request, res: Response) {
     try{
-        const { sport, position, nationality} = req.query;
+        const { sport, position, nationality, isSigned} = req.query;
         let filters: FilterQuery<Athlete> = {};
+        console.log('Query Parameters:', { sport, position, nationality }); 
 
         if (sport) filters.sport = { $like: `%${sport}%` };
-        //if (position) filters.position = { $like: `%${position}%` };
-        //if (isSigned) filters.isSigned = isSigned === 'true';
-        //if (nationality) filters.nationality = nationality as string;
+        if (position) filters.position = { $like: `%${position}%` };
+        if (nationality) filters.nationality = { $like: `%${nationality}%` };
+        if (isSigned === 'true'){
+            filters.isSigned = true;
+        } else if(isSigned === 'false'){
+            filters.isSigned = false;
+        }
 
         const athletes = await em.find(Athlete, filters, {populate: ['user']})
         res.status(200).json({message: 'found all athletes',data: athletes})
