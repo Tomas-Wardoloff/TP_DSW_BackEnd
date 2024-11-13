@@ -16,12 +16,9 @@ async function findAll(req: Request, res: Response) {
             nationality: nationality as string | undefined
         };
 
-        const athletes = await em.find(Athlete, filters/*, {populate: ['userId']}*/)
-        const result = athletes.map(athlete => ({
-            ...athlete,
-            user: athlete.user.id // Devolvemos solo el ID del usuario
-        }));
-        res.status(200).json(result)
+        // ver como solucionar la busqueda por filtro, filtra sin importar si el valor es undefined
+        const athletes = await em.find(Athlete, {}, {populate: ['user']})
+        res.status(200).json({message: 'found all athletes',data: athletes})
     }catch (error: any){
         res.status(500).json({message: error.message})
     }
@@ -32,11 +29,7 @@ async function findOne(req: Request, res: Response) {
     try{
         const id = Number.parseInt(req.params.id)
         const athlete = await em.findOneOrFail(Athlete, { id }, {populate: ['user']})
-        const result = {
-            ...athlete,
-            user: athlete.user.id // Devolvemos solo el ID del usuario
-        };
-        res.status(200).json(result)
+        res.status(200).json({message: 'found athlete', data: athlete})
     }catch (error: any){
         res.status(500).json({message: error.message})
     }
@@ -51,11 +44,7 @@ async function add(req: Request, res: Response){
             req.body.user = relatedUser;
             const newAthlete = em.create(Athlete, req.body)
             await em.flush()
-            const result = {
-                ...newAthlete,
-                user: newAthlete.user.id
-            };
-            res.status(201).json(result)
+            res.status(201).json({message: 'Athlete created', data: newAthlete})
         }
     }catch (error: any){
         res.status(500).json({message: error.message})
@@ -69,7 +58,7 @@ async function update(req: Request, res: Response){
         const athleteToUpdate = await em.findOneOrFail(Athlete, { id })
         em.assign(athleteToUpdate, req.body)
         await em.flush()
-        res.status(200).json('Athlete updated')
+        res.status(200).json({message: 'Athlete updated'})
     }catch (error: any){
         res.status(500).json({message: error.message})
     }
@@ -81,7 +70,7 @@ async function remove(req: Request, res: Response){
         const id = Number.parseInt(req.params.id)
         const athleteToRemove = em.getReference(Athlete, id)
         await em.removeAndFlush(athleteToRemove)
-        res.status(200).json('Athlete removed')
+        res.status(200).json({message: 'Athlete removed'})
     }catch (error: any){
         res.status(500).json({message: error.message})
     }

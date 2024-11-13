@@ -8,7 +8,7 @@ const em = orm.em
 async function findAll(req: Request, res: Response) {
     try{
         const users = await em.find(User, {})
-        res.status(200).json(users)
+        res.status(200).json({message: "Users found", data: users})
     }catch (error: any){
         res.status(500).json({message: error.message})
     }
@@ -19,7 +19,7 @@ async function findOne(req: Request, res: Response) {
     try{
         const id = Number.parseInt(req.params.id)
         const user = await em.findOneOrFail(User, {id})
-        res.status(200).json(user)
+        res.status(200).json({message: 'finded user', data: user})
     }catch (error: any){
         res.status(500).json({message: error.message})
     }
@@ -28,6 +28,11 @@ async function findOne(req: Request, res: Response) {
 
 async function add(req: Request, res:Response){
     try{
+        const {email} = req.body
+        const userExists = await em.findOne(User, {email})
+        if(userExists){
+            res.status(409).json({message: 'User already exists'})
+        }
         const newUser = em.create(User, req.body)
         await em.flush()
         res.status(201).json(newUser)

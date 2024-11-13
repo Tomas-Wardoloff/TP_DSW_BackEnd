@@ -9,8 +9,8 @@ const em = orm.em
 
 async function findAll(req: Request, res: Response) {
     try{
-        const agents = await em.find(Agent, {}/*, {populate: ['user']}*/)
-        res.status(200).json(agents)
+        const agents = await em.find(Agent, {}, {populate: ['user']})
+        res.status(200).json({message: 'found all agents', data: agents})
     }catch (error: any){
         res.status(500).json({message: error.message})
     }
@@ -53,7 +53,7 @@ async function update(req: Request, res: Response){
         const agentToUpdate = em.findOneOrFail(Agent, {id})
         em.assign(agentToUpdate, req.body)
         await em.flush()
-        res.status(200).json('Agent updated')
+        res.status(200).json({message: 'Agent updated'})
     }catch (error: any){
         res.status(500).json({message: error.message})
     }
@@ -65,7 +65,7 @@ async function remove(req: Request, res: Response){
         const id = Number.parseInt(req.params.id)
         const agentToRemove = em.getReference(Agent, id)
         await em.removeAndFlush(agentToRemove)
-        res.status(200).json('Agent removed')
+        res.status(200).json({message: 'Agent removed'})
     }catch (error: any){
         res.status(500).json({message: error.message})
     }
