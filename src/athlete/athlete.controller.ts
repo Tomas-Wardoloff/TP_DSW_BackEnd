@@ -2,22 +2,22 @@ import { Request, Response } from 'express'
 import { Athlete } from './athlete.entity.js'
 import { orm } from '../shared/db/orm.js'
 import { User } from '../user/user.entity.js'
+import { FilterQuery } from '@mikro-orm/core'
 
 
 const em = orm.em
 
 async function findAll(req: Request, res: Response) {
     try{
-        const { sport, position, isSigned, nationality} = req.query;
-        let filters: Partial<Athlete> = {
-            sport: sport as string | undefined,
-            position: position as string | undefined,
-            isSigned: isSigned as boolean | undefined,
-            nationality: nationality as string | undefined
-        };
+        const { sport, position, nationality} = req.query;
+        let filters: FilterQuery<Athlete> = {};
 
-        // ver como solucionar la busqueda por filtro, filtra sin importar si el valor es undefined
-        const athletes = await em.find(Athlete, {}, {populate: ['user']})
+        if (sport) filters.sport = { $like: `%${sport}%` };
+        //if (position) filters.position = { $like: `%${position}%` };
+        //if (isSigned) filters.isSigned = isSigned === 'true';
+        //if (nationality) filters.nationality = nationality as string;
+
+        const athletes = await em.find(Athlete, filters, {populate: ['user']})
         res.status(200).json({message: 'found all athletes',data: athletes})
     }catch (error: any){
         res.status(500).json({message: error.message})
