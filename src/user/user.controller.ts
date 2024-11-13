@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { User } from './user.entity.js';
+import { User, UserType } from './user.entity.js';
 import { orm } from '../shared/db/orm.js'
 
 
@@ -7,7 +7,11 @@ const em = orm.em
 
 async function findAll(req: Request, res: Response) {
     try{
-        const users = await em.find(User, {})
+        const { userType } = req.query;
+        let filters: Partial<User> = {};
+
+        if (userType) filters.userType = userType as UserType;
+        const users = await em.find(User, filters)
         res.status(200).json({message: "Users found", data: users})
     }catch (error: any){
         res.status(500).json({message: error.message})
@@ -32,10 +36,11 @@ async function add(req: Request, res:Response){
         const userExists = await em.findOne(User, {email})
         if(userExists){
             res.status(409).json({message: 'User already exists'})
+        } else {
+            const newUser = em.create(User, req.body)
+            await em.flush()
+            res.status(201).json({message: 'User created', data: newUser})
         }
-        const newUser = em.create(User, req.body)
-        await em.flush()
-        res.status(201).json({message: 'User created', data: newUser})
     }catch (error: any){
         res.status(500).json({message: error.message})
     }

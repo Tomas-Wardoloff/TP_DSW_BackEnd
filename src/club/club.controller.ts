@@ -36,7 +36,10 @@ async function add(req: Request, res: Response){
     try{
         const  { userId }  = req.body
         const relatedUser = await em.findOneOrFail(User, {id: userId})
-        if (relatedUser){
+        const existingClub = await em.findOne(Club, {user: relatedUser})
+        if (existingClub){
+            res.status(409).json({message: 'Club already exists'})
+        } else {
             req.body.user = relatedUser;
             const newClub = em.create(Club, req.body);
             await em.flush()

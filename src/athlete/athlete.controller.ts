@@ -10,8 +10,7 @@ const em = orm.em
 async function findAll(req: Request, res: Response) {
     try{
         const { sport, position, nationality, isSigned} = req.query;
-        let filters: FilterQuery<Athlete> = {};
-        console.log('Query Parameters:', { sport, position, nationality }); 
+        let filters: FilterQuery<Athlete> = {}; 
 
         if (sport) filters.sport = { $like: `%${sport}%` };
         if (position) filters.position = { $like: `%${position}%` };
@@ -45,7 +44,10 @@ async function add(req: Request, res: Response){
     try{
         const { userId } = req.body        
         const relatedUser = await em.findOneOrFail(User, {id: userId})
-        if (relatedUser){
+        const existingAthlete = await em.findOne(Athlete, {user: relatedUser})
+        if (existingAthlete){
+            res.status(409).json({message: 'Athlete already exists'})
+        } else{
             req.body.user = relatedUser;
             const newAthlete = em.create(Athlete, req.body)
             await em.flush()

@@ -34,7 +34,10 @@ async function add(req: Request, res:Response){
         const { clubId } = req.body
         const relatedUser = await em.findOneOrFail(User, {id: userId})
         const relatedClub = await em.findOneOrFail(Club, clubId)
-        if (relatedUser){
+        const existingAgent = await em.findOne(Agent, {user: relatedUser})
+        if (existingAgent){
+            res.status(409).json({message: 'Agent already exists'})
+        } else {
             req.body.club = relatedClub;
             req.body.user = relatedUser;
             const newAgent = em.create(Agent, req.body)
