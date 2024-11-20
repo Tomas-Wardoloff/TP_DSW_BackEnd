@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { User, UserType } from './user.entity.js';
 import { orm } from '../shared/db/orm.js'
+import bcrypt from 'bcrypt'; 
 
 
 const em = orm.em
@@ -32,12 +33,14 @@ async function findOne(req: Request, res: Response) {
 
 async function add(req: Request, res:Response){
     try{
-        const {email} = req.body
-        const userExists = await em.findOne(User, {email})
+        const { email, password, ...otherFields } = req.body
+        const userExists = await em.findOne(User, { email })
         if(userExists){
             res.status(409).json({message: 'User already exists'})
         } else {
-            const newUser = em.create(User, req.body)
+            const saltRounds = 10;
+            const hashedPassword = await bcrypt.hash(password, saltRounds);
+            const newUser = em.create(User, { email, password: hashedPassword, ...otherFields})
             await em.flush()
             res.status(201).json({message: 'User created', data: newUser})
         }
