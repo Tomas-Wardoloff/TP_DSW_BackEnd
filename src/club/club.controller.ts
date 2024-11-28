@@ -2,6 +2,7 @@ import { Club } from './club.entity.js';
 import { Request, Response } from 'express';
 import { orm } from '../shared/db/orm.js';
 import { User } from '../user/user.entity.js'
+import { FilterQuery } from '@mikro-orm/core'
 
 
 const em = orm.em;
@@ -10,11 +11,11 @@ const em = orm.em;
 async function findAll(req: Request, res: Response) {
     try{
         const { name } = req.query;
-        let filters: Partial<Club> = {
-            name: name as string | undefined
-        };
+        let filters: FilterQuery<Club> = {};
 
-        const clubs = await em.find(Club, {}, {populate: ['user']})
+        if (name) filters.name = { $like: `%${name}%` };
+
+        const clubs = await em.find(Club, filters, {populate: ['user']})
         res.status(200).json({message: 'found all clubs', data: clubs})
     }catch (error: any){
         res.status(500).json({message: error.message})

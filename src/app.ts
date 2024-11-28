@@ -26,7 +26,7 @@ app.use('/api/athletes', athleteRouter)
 app.use('/api/clubs', clubRouter)
 app.use('/api/agents', agentRouter)
 app.use('/api/users', userRouter)
-app.use('/api/posts/', postRouter)
+app.use('/api/posts', postRouter)
 
 app.use((_, res) => {
     return res.status(404).send({message: "Not found"})
