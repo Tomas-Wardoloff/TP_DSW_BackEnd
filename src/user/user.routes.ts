@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { findAll, findOne, add, update, remove, login } from './user.controller.js';
+import { findAll, findOne, add, update, remove } from './user.controller.js';
 
 export const userRouter = Router();
 
@@ -13,5 +13,3 @@ userRouter.post('/', add);
 userRouter.put('/:id', update);
 // Define a DELETE route to remove an Users object by ID
 userRouter.delete('/:id', remove);
-// Define a POST route to login a user
-userRouter.post('/login', login);
