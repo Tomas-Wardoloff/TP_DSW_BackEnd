@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import { MikroORM } from '@mikro-orm/core';
+import { MySqlDriver } from '@mikro-orm/mysql';
 import { SqlHighlighter } from '@mikro-orm/sql-highlighter';
 
 dotenv.config();
@@ -8,7 +9,7 @@ export const orm = await MikroORM.init({
     entities: ['dist/**/*.entity.js'],
     entitiesTs: ['src/**/*.entity.ts'],
     dbName: process.env.DB_NAME || 'sportsdb',
-    type: 'mysql',
+    driver: MySqlDriver,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     host: process.env.DB_HOST || 'localhost',
