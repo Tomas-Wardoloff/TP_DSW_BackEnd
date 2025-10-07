@@ -1,5 +1,6 @@
 import { Entity, Property, Enum } from '@mikro-orm/core';
-import { BaseEntity } from '../shared/db/baseEntity.entity.js';
+
+import { BaseEntity } from '../../shared/db/baseEntity.entity.js';
 
 @Entity()
 export class User extends BaseEntity {
@@ -14,12 +15,6 @@ export class User extends BaseEntity {
 
     @Enum(() => UserType)
     userType!: UserType;
-
-    @Property({ default: true })
-    isActive!: boolean;
-
-    @Property({ nullable: true })
-    lastLogin!: Date;
 }
 
 export enum UserType {
