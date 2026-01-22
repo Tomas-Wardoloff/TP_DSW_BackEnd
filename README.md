@@ -12,19 +12,25 @@ En el siguiente link se encuentra la propuesta de la aplicación a desarrollar: 
 ```
 2. Instala las dependencias con pnpm
 ```sh
-    pnpm install
+    pnpm install | npm install
 ```
 3. Inicia el servidor 
 ```sh
-    pnpm start
+    pnpm start | npm start
 ```
 4. Accede a la aplicacion, navegando a la ruta `http://localhost:3000` en tu navegador
 
 ## Uso
-Para iniciar el servidor en modo de desarrollo, ejecute:
+Para ejecutar el proyecto, primero asegúrate de tener corriendo el contenedor de la base de datos. Con el comando:
 
 ```sh
-    pnpm run start:dev
+    docker-compose up -d
+```
+
+Y luego ejecuta el siguiente comando en la terminal para iniciar el servidor en modo desarrollo:
+
+```sh
+    pnpm run start:dev | npm run start:dev
 ```
 
 Este comando compilará el proyecto y lo iniciará, recargando automáticamente cuando se realicen cambios en el código.
