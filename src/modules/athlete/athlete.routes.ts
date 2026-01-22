@@ -1,15 +1,27 @@
 import { Router } from 'express';
-import { findAll, findOne, add, update, remove } from './athlete.controller.js';
 
-export const athleteRouter = Router();
+import { UpdateAthleteDto } from './athlete.dto.js';
+import { AthleteController } from './athlete.controller.js';
+import { validationMiddleware } from '../../shared/middleware/validation.middleware.js';
 
-// Define a GET route to fetch all Athlete objects
-athleteRouter.get('/', findAll);
-// Define a GET route to fetch a single Athlete object by ID
-athleteRouter.get('/:id', findOne);
-// Define a POST route to add a new Athlete object
-athleteRouter.post('/', add);
-// Define a PUT route to update an existing Athlete object
-athleteRouter.put('/:id', update);
-// Define a DELETE route to remove an Athlete object by ID
-athleteRouter.delete('/:id', remove);
+export default class AthleteRouter {
+    private router = Router();
+    private athleteController = new AthleteController();
+
+    constructor() {
+        this.initializeRoutes();
+    }
+
+    private initializeRoutes() {
+        this.router.get('/', (req, res) => this.athleteController.findAll(req, res));
+        this.router.get('/:id', (req, res) => this.athleteController.findOne(req, res));
+        this.router.patch('/:id', validationMiddleware(UpdateAthleteDto), (req, res) =>
+            this.athleteController.update(req, res)
+        );
+        this.router.delete('/:id', (req, res) => this.athleteController.delete(req, res));
+    }
+
+    public getRouter() {
+        return this.router;
+    }
+}
