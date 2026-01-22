@@ -17,8 +17,8 @@ export class UserController {
     async findOne(req: Request, res: Response) {
         try {
             const id = Number.parseInt(req.params.id);
-            const user = await this.userService.findOne(id);
-            return res.status(200).json({ message: 'found user', data: user });
+            const data = await this.userService.findOne(id);
+            return res.status(200).json({ message: 'found user', data: data });
         } catch (error: any) {
             return res.status(500).json({ message: error.message });
         }

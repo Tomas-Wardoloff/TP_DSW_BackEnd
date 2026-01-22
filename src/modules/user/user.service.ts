@@ -4,9 +4,12 @@ import { EntityManager } from '@mikro-orm/mysql';
 import { orm } from '../../shared/db/orm.js';
 import { User, UserType } from './user.entity.js';
 import { CreateUserDto, UpdateUserDto } from './user.dto.js';
+import { AthleteService } from '../athlete/athlete.service.js';
+import { CreateAthleteDto } from '../athlete/athlete.dto.js';
 
 export class UserService {
     private readonly entityManager = orm.em as EntityManager;
+    private readonly athleteService = new AthleteService();
 
     async findAll(userType?: UserType): Promise<User[]> {
         const filters: Partial<User> = { deletedAt: undefined };
@@ -21,7 +24,7 @@ export class UserService {
         return this.entityManager.findOne(User, { email });
     }
 
-    async create(userData: CreateUserDto): Promise<User> {
+    async create(userData: CreateUserDto) {
         const userExists = await this.findByEmail(userData.email);
         if (userExists) {
             throw new Error('User already exists');
@@ -30,8 +33,22 @@ export class UserService {
         const hashedPassword = await bcrypt.hash(userData.password, 10);
         userData.password = hashedPassword;
         const newUser = this.entityManager.create(User, userData);
-        await this.entityManager.persistAndFlush(newUser);
-        return newUser;
+
+        this.entityManager.persist(newUser);
+
+        if (userData.userType == UserType.ATHLETE && userData.athleteProfile) {
+            const newAthlete = this.athleteService.create(
+                userData.athleteProfile as CreateAthleteDto,
+                newUser
+            );
+            this.entityManager.persist(newAthlete);
+        }
+
+        await this.entityManager.flush();
+        return {
+            ...newUser,
+            profile: userData.athleteProfile,
+        };
     }
 
     async update(id: number, updateData: UpdateUserDto): Promise<void> {
