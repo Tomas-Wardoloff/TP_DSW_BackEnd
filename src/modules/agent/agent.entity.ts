@@ -1,7 +1,8 @@
+import { Entity, OneToOne, Property, Cascade } from '@mikro-orm/core';
+
 import { Club } from '../club/club.entity.js';
 import { User } from '../user/user.entity.js';
-import { BaseEntity } from '../shared/db/baseEntity.entity.js';
-import { ManyToOne, Entity, OneToOne, Property, Cascade } from '@mikro-orm/core';
+import { BaseEntity } from '../../shared/db/baseEntity.entity.js';
 
 @Entity()
 export class Agent extends BaseEntity {
