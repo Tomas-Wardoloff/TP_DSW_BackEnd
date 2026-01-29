@@ -15,7 +15,7 @@ export class AgentService {
     }
 
     async findOne(id: number): Promise<Agent | null> {
-        return this.entityManager.findOne(Agent, {id, deletedAt: null});
+        return this.entityManager.findOne(Agent, {id, deletedAt: undefined});
     }
 
     create(agentData: CreateAgentDto, user: User, club: Club): Agent {
@@ -30,7 +30,7 @@ export class AgentService {
     async update(id: number, updateData: UpdateAgentDto): Promise<void> {
         const agentToUpdate = await this.entityManager.findOneOrFail(Agent, {
             id,
-            deletedAt: null,
+            deletedAt: undefined,
         });
         this.entityManager.assign(agentToUpdate, updateData);
         await this.entityManager.flush();
