@@ -1,32 +1,36 @@
-import 'reflect-metadata';
 import dotenv from 'dotenv';
-import cors from 'cors';
 import express from 'express';
-import { athleteRouter } from './athlete/athlete.routes.js';
-import { clubRouter } from './club/club.routes.js';
-import { agentRouter } from './agent/agent.routes.js';
-import { orm, syncSchema } from './shared/db/orm.js';
+import cors from 'cors';
 import { RequestContext } from '@mikro-orm/core';
-import { userRouter } from './user/user.routes.js';
-import { postRouter } from './post/post.routes.js';
+
+import { orm, syncSchema } from './shared/db/orm.js';
+
+import AthleteRouter from './modules/athlete/athlete.routes.js';
+import AgentRouter from './modules/agent/agent.routes.js';
+import UserRouter from './modules/user/user.routes.js';
+import ClubRouter from './modules/club/club.routes.js';
 
 dotenv.config();
 
 const app = express();
 
-app.use(express.json(), cors());
-
+app.use(express.json());
 app.use(cors({ origin: 'http://localhost:4200' }));
-
 app.use((req, res, next) => {
     RequestContext.create(orm.em, next);
 });
 
-app.use('/api/athletes', athleteRouter);
-app.use('/api/clubs', clubRouter);
-app.use('/api/agents', agentRouter);
-app.use('/api/users', userRouter);
-app.use('/api/posts', postRouter);
+const routers = {
+    athletes: new AthleteRouter().getRouter(),
+    agents: new AgentRouter().getRouter(),
+    users: new UserRouter().getRouter(),
+    clubs: new ClubRouter().getRouter(),
+};
+
+app.use('/api/athletes', routers.athletes);
+app.use('/api/agents', routers.agents);
+app.use('/api/users', routers.users);
+app.use('/api/clubs', routers.clubs);
 
 app.use((_, res) => {
     return res.status(404).send({ message: 'Not found' });
@@ -37,5 +41,5 @@ await syncSchema(); // never in production
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
-    console.log(`server running on http://localhost:${port}`);
+    console.log(`Server running on http://localhost:${port}`);
 });
