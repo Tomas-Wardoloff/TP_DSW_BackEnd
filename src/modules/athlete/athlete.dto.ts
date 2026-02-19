@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsString, IsDate, IsBoolean } from 'class-validator';
+import { IsString, IsDate, IsBoolean, IsArray, ArrayMinSize, IsInt, IsOptional } from 'class-validator';
 
 export class CreateAthleteDto {
     @IsString()
@@ -15,36 +15,52 @@ export class CreateAthleteDto {
     @IsString()
     nationality!: string;
 
-    @IsString()
-    sport!: string;
+    @IsArray()
+    @ArrayMinSize(1) // Un atleta debe tener al menos un deporte
+    @IsInt({ each: true }) // each: true valida cada elemento del array
+    sportIds!: number[];
 
-    @IsString()
-    position!: string;
+    @IsArray()
+    @ArrayMinSize(1) // Un atleta debe tener al menos una posición
+    @IsInt({ each: true })
+    positionIds!: number[];
 
+    @IsOptional()
     @IsBoolean()
-    isSigned!: boolean;
+    isSigned?: boolean;
 }
 
 export class UpdateAthleteDto {
+    @IsOptional()
     @IsString()
     firstName?: string;
 
+    @IsOptional()
     @IsString()
     lastName?: string;
 
+    @IsOptional()
     @Type(() => Date)
     @IsDate()
     birthDate?: Date;
 
+    @IsOptional()
     @IsString()
     nationality?: string;
 
-    @IsString()
-    sport?: string;
+    @IsOptional()
+    @IsArray()
+    @ArrayMinSize(1)
+    @IsInt({ each: true })
+    sportIds?: number[];
 
-    @IsString()
-    position?: string;
+    @IsOptional()
+    @IsArray()
+    @ArrayMinSize(1)
+    @IsInt({ each: true })
+    positionIds?: number[];
 
+    @IsOptional()
     @IsBoolean()
     isSigned?: boolean;
 }

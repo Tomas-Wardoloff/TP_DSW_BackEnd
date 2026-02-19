@@ -1,4 +1,4 @@
-import { Entity, OneToOne, Property, Cascade } from '@mikro-orm/core';
+import { Entity, OneToOne, Property, Cascade, Collection, ManyToMany } from '@mikro-orm/core';
 
 import { Club } from '../club/club.entity.js';
 import { User } from '../user/user.entity.js';
@@ -11,10 +11,14 @@ export class Agent extends BaseEntity {
 
     @Property()
     lastName!: string;
+    
+    @ManyToMany(() => Club, (club) => club.agents, { owner: true })
+    clubs = new Collection<Club>(this);
 
-    @OneToOne(() => User, { nullable: false, cascade: [Cascade.ALL] })
+    @OneToOne(() => User, (user) => user.agentProfile, {
+        owner: true,
+        unique: true,
+        cascade: [Cascade.PERSIST],
+    })
     user!: User;
-
-    @OneToOne(() => Club, { nullable: true, cascade: [Cascade.ALL] })
-    club!: Club;
 }
