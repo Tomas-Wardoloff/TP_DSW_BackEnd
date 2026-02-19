@@ -5,74 +5,136 @@ import { orm } from '../../shared/db/orm.js';
 import { User, UserType } from './user.entity.js';
 import { CreateUserDto, UpdateUserDto } from './user.dto.js';
 import { AthleteService } from '../athlete/athlete.service.js';
-import { CreateAthleteDto } from '../athlete/athlete.dto.js';
+import { AgentService } from '../agent/agent.service.js'
+import { ClubService } from '../club/club.service.js';
 
 export class UserService {
-    private readonly entityManager = orm.em as EntityManager;
+    private readonly clubService = new ClubService();
     private readonly athleteService = new AthleteService();
+    private readonly agentService = new AgentService();
+
+    private get em(): EntityManager {
+        return orm.em.fork();
+    }
 
     async findAll(userType?: UserType): Promise<User[]> {
-        const filters: Partial<User> = { deletedAt: undefined };
-        return this.entityManager.find(User, filters);
+        const where = userType && Object.values(UserType).includes(userType)
+            ? { userType }
+            : {};
+
+        return this.em.find(User, where, {
+            populate: ['athleteProfile', 'clubProfile', 'agentProfile'],
+        });
     }
 
     async findOne(id: number): Promise<User | null> {
-        return this.entityManager.findOne(User, { id, deletedAt: null });
+        return this.em.findOne(
+            User,
+            { id },
+            { populate: ['athleteProfile', 'clubProfile', 'agentProfile'] }
+        );   
     }
 
     async findByEmail(email: string): Promise<User | null> {
-        return this.entityManager.findOne(User, { email });
+        return this.em.findOne(User, { email });
     }
 
     async create(userData: CreateUserDto) {
+        const em = this.em;
+
+        this.validateProfilePresence(userData);
+
         const userExists = await this.findByEmail(userData.email);
         if (userExists) {
             throw new Error('User already exists');
         }
 
         const hashedPassword = await bcrypt.hash(userData.password, 10);
-        userData.password = hashedPassword;
-        const newUser = this.entityManager.create(User, userData);
 
-        this.entityManager.persist(newUser);
+        const newUser = em.create(User, {
+            email: userData.email,
+            password: hashedPassword,
+            phoneNumber: userData.phoneNumber,
+            userType: userData.userType,
+        });
 
-        if (userData.userType == UserType.ATHLETE && userData.athleteProfile) {
-            const newAthlete = this.athleteService.create(
-                userData.athleteProfile as CreateAthleteDto,
-                newUser
-            );
-            this.entityManager.persist(newAthlete);
+        if (userData.userType === UserType.ATHLETE) {
+            await this.athleteService.create(em, newUser, userData.athleteProfile!);
+        } else if (userData.userType === UserType.CLUB) {
+            await this.clubService.create(em, newUser, userData.clubProfile!);
+        } else if (userData.userType === UserType.AGENT) {
+            await this.agentService.create(em, newUser, userData.agentProfile!);
         }
 
-        await this.entityManager.flush();
-        return {
-            ...newUser,
-            profile: userData.athleteProfile,
-        };
+        await em.flush();
+
+        await em.populate(newUser, ['athleteProfile', 'clubProfile', 'agentProfile']);
+
+        return newUser;
     }
 
-    async update(id: number, updateData: UpdateUserDto): Promise<void> {
-        const userToUpdate = await this.entityManager.findOneOrFail(User, { id, deletedAt: null });
+    async update(id: number, updateData: UpdateUserDto): Promise<User> {
+        const em = this.em;
 
-        if (updateData.password) {
-            const hashedPassword = await bcrypt.hash(updateData.password, 10);
-            updateData.password = hashedPassword;
+        const user = await em.findOne(User, { id });
+        if (!user) {
+            throw new Error('User not found');
         }
 
-        if (updateData.email) {
+        if (updateData.email && updateData.email !== user.email) {
             const isEmailTaken = await this.findByEmail(updateData.email);
             if (isEmailTaken) {
                 throw new Error('Email is already taken');
             }
         }
 
-        this.entityManager.assign(userToUpdate, updateData);
-        await this.entityManager.persistAndFlush(userToUpdate);
+        if (updateData.password) {
+            updateData.password = await bcrypt.hash(updateData.password, 10);
+        }
+
+        em.assign(user, updateData);
+        await em.flush();
+
+        return user
     }
 
     async delete(id: number): Promise<void> {
-        const userToDelete = await this.entityManager.findOneOrFail(User, { id });
-        userToDelete.deletedAt = new Date();
-        await this.entityManager.flush();
+        const em = this.em;
+
+        const user = await em.findOne(
+            User,
+            { id },
+            { populate: ['athleteProfile', 'clubProfile', 'agentProfile'] }
+        );
+
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        const now = new Date();
+
+        if (user.athleteProfile) {
+            user.athleteProfile.deletedAt = now;
+        } else if (user.clubProfile) {
+            user.clubProfile.deletedAt = now;
+        } else if (user.agentProfile) {
+            user.agentProfile.deletedAt = now;
+        }
+
+        user.deletedAt = now;
+        await em.flush();
     }
+
+    private validateProfilePresence(userData: CreateUserDto): void {
+        const profileMap = {
+            [UserType.ATHLETE]: userData.athleteProfile,
+            [UserType.CLUB]: userData.clubProfile,
+            [UserType.AGENT]: userData.agentProfile,
+        };
+
+        if (!profileMap[userData.userType]) {
+            throw new Error('Profile data is required');
+        }
+    }
+
 }
