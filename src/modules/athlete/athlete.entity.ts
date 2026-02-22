@@ -1,4 +1,4 @@
-import { Entity, OneToOne, Property, Cascade, Collection, ManyToMany } from '@mikro-orm/core';
+import { Entity, OneToOne, Property, Cascade, Collection, ManyToMany, Rel } from '@mikro-orm/core';
 
 import { User } from '../user/user.entity.js';
 import { Sport } from '../sports/sport.entity.js';
@@ -33,5 +33,5 @@ export class Athlete extends BaseEntity {
         unique: true,
         cascade: [Cascade.PERSIST],
     })
-    user!: User;
+    user!: Rel<User>;
 }

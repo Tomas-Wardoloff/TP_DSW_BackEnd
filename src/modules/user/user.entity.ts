@@ -1,4 +1,4 @@
-import { Entity, Property, Enum, OneToOne} from '@mikro-orm/core';
+import { Entity, Property, Enum, OneToOne, Rel} from '@mikro-orm/core';
 
 import { Club } from '../club/club.entity.js';
 import { Agent } from '../agent/agent.entity.js';
@@ -20,13 +20,13 @@ export class User extends BaseEntity {
     userType!: UserType;
 
     @OneToOne(() => Athlete, (athlete) => athlete.user, { nullable: true })
-    athleteProfile?: Athlete;
+    athleteProfile?: Rel<Athlete>;
 
     @OneToOne(() => Club, (club) => club.user, { nullable: true })
-    clubProfile?: Club;
+    clubProfile?: Rel<Club>;
 
     @OneToOne(() => Agent, (agent) => agent.user, { nullable: true })
-    agentProfile?: Agent;
+    agentProfile?: Rel<Agent>;
 }
 
 export enum UserType {
