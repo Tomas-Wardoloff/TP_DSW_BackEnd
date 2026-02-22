@@ -7,38 +7,80 @@ import { Club } from "../club/club.entity.js";
 import { CreateAgentDto, UpdateAgentDto } from "./agent.dto.js";
 
 export class AgentService {
-    private readonly entityManager  = orm.em as EntityManager
+    private get em(): EntityManager {
+        return orm.em.fork();
+    }
+    
 
     async findAll(): Promise<Agent[]> {
-        const filters: Partial<Agent> = {deletedAt: undefined};
-        return this.entityManager.find(Agent, filters);
+        return this.em.find(Agent, {}, {
+            populate: ['clubs', 'user'],
+        });
     }
 
     async findOne(id: number): Promise<Agent | null> {
-        return this.entityManager.findOne(Agent, {id, deletedAt: undefined});
+        return this.em.findOne(Agent, { id }, {
+            populate: ['clubs', 'user'],
+        });
     }
 
-    create(agentData: CreateAgentDto, user: User, club: Club): Agent {
-        const newAgent = this.entityManager.create(Agent, {
-            ...agentData, 
-            user, 
-            club,
+    async create(em: EntityManager, user: User, dto: CreateAgentDto): Promise<Agent> {
+        const agent = em.create(Agent, {
+            firstName: dto.firstName,
+            lastName: dto.lastName,
+            user,
         });
-        return newAgent
+
+        em.persist(agent);
+        return agent;
     }
 
-    async update(id: number, updateData: UpdateAgentDto): Promise<void> {
-        const agentToUpdate = await this.entityManager.findOneOrFail(Agent, {
-            id,
-            deletedAt: undefined,
+    async update(id: number, dto: UpdateAgentDto): Promise<Agent> {
+        const em = this.em;
+
+        const agent = await em.findOne(Agent, { id });
+        if (!agent) {
+            throw new Error('Agent not found');
+        }
+
+        em.assign(agent, {
+            ...(dto.firstName && { firstName: dto.firstName }),
+            ...(dto.lastName && { lastName: dto.lastName }),
         });
-        this.entityManager.assign(agentToUpdate, updateData);
-        await this.entityManager.flush();
+
+        await em.flush();
+        return agent;
     }
 
     async delete(id: number): Promise<void> {
-        const agentToDelete = await this.entityManager.findOneOrFail(Agent, {id});
-        agentToDelete.deletedAt = new Date();
-        await this.entityManager.flush();
+        const em = this.em;
+
+        const agent = await em.findOne(Agent, { id });
+        if (!agent) {
+            throw new Error('Agent not found');
+        }
+
+        agent.deletedAt = new Date();
+        await em.flush();
     }
+
+    /*async updateClubs(id: number, clubIds: number[]): Promise<Agent> {
+        const em = this.em;
+
+        const agent = await em.findOne(Agent, { id }, {
+            populate: ['clubs'],
+        });
+        if (!agent) {
+            throw new Error('Agent not found');
+        }
+
+        const clubs = await em.find(Club, { id: { $in: clubIds } });
+        if (clubs.length !== clubIds.length) {
+            throw new Error('One or more club IDs are invalid');
+        }
+
+        agent.clubs.set(clubs);
+        await em.flush();
+        return agent;
+    }*/
 }

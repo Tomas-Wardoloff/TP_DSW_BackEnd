@@ -1,28 +1,8 @@
 import { Request, Response } from 'express';
 
 import { AgentService } from './agent.service.js';
+import { UpdateAgentDto } from './agent.dto.js';
 
-// Manejo la creacion de un agente desde lo usuarios
-//async function add(req: Request, res: Response) {
-//    try {
-//        const { userId } = req.body;
-//        const { clubId } = req.body;
-//        const relatedUser = await em.findOneOrFail(User, { id: userId });
-//        const relatedClub = await em.findOneOrFail(Club, clubId);
-//        const existingAgent = await em.findOne(Agent, { user: relatedUser });
-//        if (existingAgent) {
-//            res.status(409).json({ message: 'Agent already exists' });
-//        } else {
-//            req.body.club = relatedClub;
-//            req.body.user = relatedUser;
-//            const newAgent = em.create(Agent, req.body);
-//            await em.flush();
-//            res.status(201).json({ message: 'Agent created', data: newAgent });
-//        }
-//    } catch (error: any) {
-//        res.status(500).json({ message: error.message });
-//    }
-//}
 
 export class AgentController {
     private agentService = new AgentService();
@@ -30,7 +10,7 @@ export class AgentController {
     async findAll(req: Request, res: Response) {
         try {
             const agents = await this.agentService.findAll();
-            return res.status(200).json({ message: 'Found agents', data: agents });
+            return res.status(200).json({ message: 'Agents found', data: agents });
         } catch (error: any) {
             return res.status(500).json({ message: error.message });
         }
@@ -39,8 +19,16 @@ export class AgentController {
     async findOne(req: Request, res: Response) {
         try {
             const id = Number.parseInt(req.params.id);
+            if (isNaN(id)) {
+                return res.status(400).json({ message: 'Invalid id' });
+            }
+
             const agent = await this.agentService.findOne(id);
-            return res.status(200).json({ message: 'Found agent', data: agent });
+            if (!agent) {
+                return res.status(404).json({ message: 'Agent not found' });
+            }
+
+            return res.status(200).json({ message: 'Agent found', data: agent });
         } catch (error: any) {
             return res.status(500).json({ message: error.message });
         }
@@ -48,11 +36,18 @@ export class AgentController {
 
     async update(req: Request, res: Response) {
         try {
-            const payload = req.body;
             const id = Number.parseInt(req.params.id);
-            await this.agentService.update(id, payload);
-            return res.status(200).json({ message: 'Agent updated' });
+            if (isNaN(id)) {
+                return res.status(400).json({ message: 'Invalid id' });
+            }
+
+            const payload = req.body as UpdateAgentDto;
+            const updatedAgent = await this.agentService.update(id, payload);
+            return res.status(200).json({ message: 'Agent updated', data: updatedAgent });
         } catch (error: any) {
+            if (error.message === 'Agent not found') {
+                return res.status(404).json({ message: error.message });
+            }
             return res.status(500).json({ message: error.message });
         }
     }
@@ -60,10 +55,37 @@ export class AgentController {
     async delete(req: Request, res: Response) {
         try {
             const id = Number.parseInt(req.params.id);
+            if (isNaN(id)) {
+                return res.status(400).json({ message: 'Invalid id' });
+            }
+
             await this.agentService.delete(id);
-            return res.status(200).json({ message: 'Agent removed' });
+            return res.status(204).send();
         } catch (error: any) {
+            if (error.message === 'Agent not found') 
+                return res.status(404).json({ message: error.message });
             return res.status(500).json({ message: error.message });
         }
     }
+
+    /*async updateClubs(req: Request, res: Response) {
+        try {
+            const id = Number.parseInt(req.params.id);
+            if (isNaN(id)) {
+                return res.status(400).json({ message: 'Invalid id' });
+            }
+
+            const payload = req.body as UpdateAgentClubsDto;
+            const updatedAgent = await this.agentService.updateClubs(id, payload.clubIds);
+            return res.status(200).json({ message: 'Agent clubs updated', data: updatedAgent });
+        } catch (error: any) {
+            if (error.message === 'Agent not found') {
+                return res.status(404).json({ message: error.message });
+            }
+            if (error.message === 'One or more club IDs are invalid') {
+                return res.status(400).json({ message: error.message });
+            }
+            return res.status(500).json({ message: error.message });
+        }
+    }*/
 }
