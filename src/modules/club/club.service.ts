@@ -1,29 +1,66 @@
 import { EntityManager } from "@mikro-orm/mysql";
 
-import { Club } from "./club.entity"
+import { Club } from "./club.entity.js"
 import { orm } from "../../shared/db/orm.js"
 import { User } from "../user/user.entity.js";
-import { UpdateClubDto } from "./club.dto.js";
+import { CreateClubDto, UpdateClubDto } from "./club.dto.js";
 
 export class ClubService {
-    private readonly entityManager  = orm.em as EntityManager
+    private get em(): EntityManager {
+        return orm.em.fork();
+    }
 
     async findAll(): Promise<Club[]> {
-        const filters: Partial<Club> = {deletedAt: undefined};
-        return this.entityManager.find(Club, filters);
+        return this.em.find(Club, {}, {
+            populate: ['agents', 'user'],
+        });
     }
 
     async findOne(id: number): Promise<Club | null> {
-        return this.entityManager.findOne(Club, {id, deletedAt: undefined});
+        return this.em.findOne(Club, { id }, {
+            populate: ['agents', 'user'],
+        });
     }
 
-    //create(clubData: CreateClubDto, user: User){}
+    async create(em: EntityManager, user: User, createClubDto: CreateClubDto): Promise<Club> {
+        const club = em.create(Club, {
+            name: createClubDto.name,
+            address: createClubDto.address,
+            openingDate: createClubDto.openingDate,
+            user,
+        });
 
-    async update(id: number, updateData: UpdateClubDto){}
+        em.persist(club);
+        return club;
+    }
+
+    async update(id: number, dto: UpdateClubDto): Promise<Club> {
+        const em = this.em;
+
+        const club = await em.findOne(Club, { id });
+        if (!club) {
+            throw new Error('Club not found');
+        }
+
+        em.assign(club, {
+            ...(dto.name && { name: dto.name }),
+            ...(dto.address && { address: dto.address }),
+            ...(dto.openingDate && { openingDate: dto.openingDate }),
+        });
+
+        await em.flush();
+        return club;
+    }
 
     async delete(id: number): Promise<void> {
-        const clubToDelete = await this.entityManager.findOneOrFail(Club, {id});
-        clubToDelete.deletedAt = new Date();
-        await this.entityManager.flush();
+        const em = this.em;
+
+        const club = await em.findOne(Club, { id });
+        if (!club) {
+            throw new Error('Club not found');
+        }
+
+        club.deletedAt = new Date();
+        await em.flush();
     }
 }

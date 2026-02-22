@@ -1,41 +1,7 @@
 import { Request, Response } from 'express';
 
-import { Club } from './club.entity.js';
 import { ClubService } from './club.service.js';
-//import { FilterQuery } from '@mikro-orm/core';
-
-
-//async function findAll(req: Request, res: Response) {
-//    try {
-//        const { name } = req.query;
-//        let filters: FilterQuery<Club> = {};
-//
-//        if (name) filters.name = { $like: `%${name}%` };
-//
-//        const clubs = await em.find(Club, filters, { populate: ['user'] });
-//        res.status(200).json({ message: 'found all clubs', data: clubs });
-//    } catch (error: any) {
-//        res.status(500).json({ message: error.message });
-//    }
-//}
-
-//async function add(req: Request, res: Response) {
-//    try {
-//        const { userId } = req.body;
-//        const relatedUser = await em.findOneOrFail(User, { id: userId });
-//        const existingClub = await em.findOne(Club, { user: relatedUser });
-//        if (existingClub) {
-//            res.status(409).json({ message: 'Club already exists' });
-//        } else {
-//            req.body.user = relatedUser;
-//            const newClub = em.create(Club, req.body);
-//            await em.flush();
-//            res.status(201).json({ message: 'Club created', data: newClub });
-//        }
-//    } catch (error: any) {
-//        res.status(500).json({ message: error.message });
-//    }
-//}
+import { UpdateClubDto } from './club.dto.js';
 
 export class ClubController {
     private clubService = new ClubService();
@@ -43,17 +9,25 @@ export class ClubController {
     async findAll(req: Request, res: Response) {
         try {
             const clubs = await this.clubService.findAll();
-            return res.status(200).json({ message: 'Found clubs', data: clubs });
+            return res.status(200).json({ message: 'Clubs found', data: clubs });
         } catch (error: any) {
-            return res.status(500).json({ message: error.message });   
+            return res.status(500).json({ message: error.message });
         }
     }
 
     async findOne(req: Request, res: Response) {
         try {
             const id = Number.parseInt(req.params.id);
+            if (isNaN(id)) {
+                return res.status(400).json({ message: 'Invalid id' });
+            }
+
             const club = await this.clubService.findOne(id);
-            return res.status(200).json({ message: 'Found club', data: club });
+            if (!club) {
+                return res.status(404).json({ message: 'Club not found' });
+            }
+
+            return res.status(200).json({ message: 'Club found', data: club });
         } catch (error: any) {
             return res.status(500).json({ message: error.message });
         }
@@ -61,11 +35,18 @@ export class ClubController {
 
     async update(req: Request, res: Response) {
         try {
-            const payload = req.body;
             const id = Number.parseInt(req.params.id);
-            await this.clubService.update(id, payload);
-            return res.status(200).json({ message: 'Club updated' });
+            if (isNaN(id)) {
+                return res.status(400).json({ message: 'Invalid id' });
+            }
+
+            const payload = req.body as UpdateClubDto;
+            const updatedClub = await this.clubService.update(id, payload);
+            return res.status(200).json({ message: 'Club updated', data: updatedClub });
         } catch (error: any) {
+            if (error.message === 'Club not found') {
+                return res.status(404).json({ message: error.message });
+            }
             return res.status(500).json({ message: error.message });
         }
     }
@@ -73,9 +54,16 @@ export class ClubController {
     async delete(req: Request, res: Response) {
         try {
             const id = Number.parseInt(req.params.id);
+            if (isNaN(id)) {
+                return res.status(400).json({ message: 'Invalid id' });
+            }
+
             await this.clubService.delete(id);
-            return res.status(200).json({ message: 'Club removed' });
+            return res.status(204).send();
         } catch (error: any) {
+            if (error.message === 'Club not found') {
+                return res.status(404).json({ message: error.message });
+            }
             return res.status(500).json({ message: error.message });
         }
     }
