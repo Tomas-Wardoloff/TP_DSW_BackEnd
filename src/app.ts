@@ -15,7 +15,7 @@ dotenv.config();
 const app = express();
 
 app.use(express.json());
-app.use(cors({ origin: 'http://localhost:4200' }));
+app.use(cors({ origin: 'http://localhost:5173' }));
 app.use((req, res, next) => {
     RequestContext.create(orm.em, next);
 });
