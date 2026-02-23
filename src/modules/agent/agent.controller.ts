@@ -42,12 +42,13 @@ export class AgentController {
             }
 
             const payload = req.body as UpdateAgentDto;
-            const updatedAgent = await this.agentService.update(id, payload);
+            const updatedAgent = await this.agentService.update(id, payload, req.user!.userId);
             return res.status(200).json({ message: 'Agent updated', data: updatedAgent });
         } catch (error: any) {
-            if (error.message === 'Agent not found') {
+            if (error.message === 'Agent not found') 
                 return res.status(404).json({ message: error.message });
-            }
+            if (error.message === 'Forbidden') 
+                return res.status(403).json({ message: error.message });
             return res.status(500).json({ message: error.message });
         }
     }
@@ -59,11 +60,13 @@ export class AgentController {
                 return res.status(400).json({ message: 'Invalid id' });
             }
 
-            await this.agentService.delete(id);
+            await this.agentService.delete(id, req.user!.userId);
             return res.status(204).send();
         } catch (error: any) {
             if (error.message === 'Agent not found') 
                 return res.status(404).json({ message: error.message });
+            if (error.message === 'Forbidden') 
+                return res.status(403).json({ message: error.message });
             return res.status(500).json({ message: error.message });
         }
     }

@@ -2,7 +2,9 @@ import { Router } from 'express';
 
 import { UpdateAgentDto } from './agent.dto.js';
 import { AgentController } from './agent.controller.js';
+import { authMiddleware, authorizationMiddleware } from '../auth/auth.middleware.js';
 import { validationMiddleware } from '../../shared/middleware/validation.middleware.js';
+import { UserType } from '../user/user.entity.js';
 
 export default class AgentRouter {
     private router = Router();
@@ -13,33 +15,35 @@ export default class AgentRouter {
     }
 
     private initializeRoutes() {
-        this.router.get('/', (req, res) =>
-            this.agentController.findAll(req, res)
+        this.router.get('/', authMiddleware, 
+            (req, res) => this.agentController.findAll(req, res)
         );
 
-        this.router.get('/:id', (req, res) =>
-            this.agentController.findOne(req, res)
+        this.router.get('/:id', authMiddleware, 
+            (req, res) => this.agentController.findOne(req, res)
         );
 
         this.router.patch(
             '/:id',
+            authMiddleware,
+            authorizationMiddleware(UserType.AGENT),
             validationMiddleware(UpdateAgentDto),
             (req, res) => this.agentController.update(req, res)
         );
 
-        this.router.delete('/:id', (req, res) =>
-            this.agentController.delete(req, res)
+        this.router.delete('/:id', 
+            authMiddleware,
+            authorizationMiddleware(UserType.AGENT),
+            (req, res) => this.agentController.delete(req, res)
         );
 
-        /*
-        // Endpoint dedicado para manejar la relación ManyToMany con clubs.
-        // PUT porque reemplaza la colección completa, no agrega un elemento.
-        this.router.put(
+        /*this.router.put(
             '/:id/clubs',
+            authMiddleware,
+            authorizationMiddleware(UserType.AGENT),
             validationMiddleware(UpdateAgentClubsDto),
             (req, res) => this.agentController.updateClubs(req, res)
-        );
-        */ 
+        );*/
     }
 
     public getRouter() {

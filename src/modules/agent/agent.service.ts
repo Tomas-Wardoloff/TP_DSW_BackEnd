@@ -3,7 +3,6 @@ import { EntityManager } from "@mikro-orm/mysql"
 import { Agent } from "./agent.entity.js"
 import { orm } from "../../shared/db/orm.js"
 import { User } from "../user/user.entity.js";
-import { Club } from "../club/club.entity.js";
 import { CreateAgentDto, UpdateAgentDto } from "./agent.dto.js";
 
 export class AgentService {
@@ -24,10 +23,10 @@ export class AgentService {
         });
     }
 
-    async create(em: EntityManager, user: User, dto: CreateAgentDto): Promise<Agent> {
+    async create(em: EntityManager, user: User, agentData: CreateAgentDto): Promise<Agent> {
         const agent = em.create(Agent, {
-            firstName: dto.firstName,
-            lastName: dto.lastName,
+            firstName: agentData.firstName,
+            lastName: agentData.lastName,
             user,
         });
 
@@ -35,30 +34,33 @@ export class AgentService {
         return agent;
     }
 
-    async update(id: number, dto: UpdateAgentDto): Promise<Agent> {
+    async update(id: number, updateData: UpdateAgentDto, requestingUserId: number): Promise<Agent> {
         const em = this.em;
 
         const agent = await em.findOne(Agent, { id });
-        if (!agent) {
-            throw new Error('Agent not found');
-        }
+        
+        if (!agent) throw new Error('Agent not found');
+
+        if (agent.user.id !== requestingUserId) throw new Error('Forbidden')
 
         em.assign(agent, {
-            ...(dto.firstName && { firstName: dto.firstName }),
-            ...(dto.lastName && { lastName: dto.lastName }),
+            ...(updateData.firstName && { firstName: updateData.firstName }),
+            ...(updateData.lastName && { lastName: updateData.lastName }),
         });
 
         await em.flush();
         return agent;
     }
 
-    async delete(id: number): Promise<void> {
+    async delete(id: number, requestingUserId: number): Promise<void> {
         const em = this.em;
 
         const agent = await em.findOne(Agent, { id });
         if (!agent) {
             throw new Error('Agent not found');
         }
+
+        if (agent.user.id !== requestingUserId) throw new Error('Forbidden')
 
         agent.deletedAt = new Date();
         await em.flush();
