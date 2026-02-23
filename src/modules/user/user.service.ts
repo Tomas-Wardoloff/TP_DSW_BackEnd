@@ -73,13 +73,15 @@ export class UserService {
         return newUser;
     }
 
-    async update(id: number, updateData: UpdateUserDto): Promise<User> {
+    async update(id: number, updateData: UpdateUserDto, requestingUserId: number): Promise<User> {
         const em = this.em;
 
         const user = await em.findOne(User, { id });
-        if (!user) {
-            throw new Error('User not found');
-        }
+
+        if (!user) throw new Error('User not found');
+
+        if (user.id !== requestingUserId) throw new Error('Forbidden');
+        
 
         if (updateData.email && updateData.email !== user.email) {
             const isEmailTaken = await this.findByEmail(updateData.email);
@@ -98,7 +100,7 @@ export class UserService {
         return user
     }
 
-    async delete(id: number): Promise<void> {
+    async delete(id: number, requestingUserId: number): Promise<void> {
         const em = this.em;
 
         const user = await em.findOne(
@@ -107,9 +109,9 @@ export class UserService {
             { populate: ['athleteProfile', 'clubProfile', 'agentProfile'] }
         );
 
-        if (!user) {
-            throw new Error('User not found');
-        }
+        if (!user) throw new Error('User not found');
+    
+        if (user.id !== requestingUserId) throw new Error('Forbidden');
 
         const now = new Date();
 

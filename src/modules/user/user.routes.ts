@@ -1,9 +1,9 @@
 import { Router } from 'express';
 
-import { CreateUserDto, UpdateUserDto } from './user.dto.js';
 import { UserController } from './user.controller.js';
+import { authMiddleware } from '../auth/auth.middleware.js';
+import { CreateUserDto, UpdateUserDto } from './user.dto.js';
 import { validationMiddleware } from '../../shared/middleware/validation.middleware.js';
-//import { authMiddleware } from '../../shared/middleware/auth.middleware.js';
 
 export default class UserRouter {
     private router = Router();
@@ -18,20 +18,22 @@ export default class UserRouter {
             this.userController.create(req, res)
         );
 
-        this.router.get('/', (req, res) =>
-            this.userController.findAll(req, res)
+        this.router.get('/', authMiddleware, 
+            (req, res) => this.userController.findAll(req, res)
         );
 
-        this.router.get('/:id', (req, res) =>
-            this.userController.findOne(req, res)
+        this.router.get('/:id', authMiddleware, 
+            (req, res) => this.userController.findOne(req, res)
         );
 
-        this.router.patch('/:id', validationMiddleware(UpdateUserDto), (req, res) =>
-            this.userController.update(req, res)
+        this.router.patch('/:id', 
+            authMiddleware, 
+            validationMiddleware(UpdateUserDto), 
+            (req, res) => this.userController.update(req, res)
         );
 
-        this.router.delete('/:id', (req, res) =>
-            this.userController.delete(req, res)
+        this.router.delete('/:id', authMiddleware, 
+            (req, res) => this.userController.delete(req, res)
         );
     }
 
