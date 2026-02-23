@@ -34,31 +34,33 @@ export class ClubService {
         return club;
     }
 
-    async update(id: number, dto: UpdateClubDto): Promise<Club> {
+    async update(id: number, updateData: UpdateClubDto, requestingUserId: number): Promise<Club> {
         const em = this.em;
 
         const club = await em.findOne(Club, { id });
-        if (!club) {
-            throw new Error('Club not found');
-        }
+        
+        if (!club) throw new Error('Club not found');
+
+        if (club.user.id !== requestingUserId) throw new Error('Forbidden');
 
         em.assign(club, {
-            ...(dto.name && { name: dto.name }),
-            ...(dto.address && { address: dto.address }),
-            ...(dto.openingDate && { openingDate: dto.openingDate }),
+            ...(updateData.name && { name: updateData.name }),
+            ...(updateData.address && { address: updateData.address }),
+            ...(updateData.openingDate && { openingDate: updateData.openingDate }),
         });
 
         await em.flush();
         return club;
     }
 
-    async delete(id: number): Promise<void> {
+    async delete(id: number, requestingUserId: number): Promise<void> {
         const em = this.em;
 
         const club = await em.findOne(Club, { id });
-        if (!club) {
-            throw new Error('Club not found');
-        }
+        
+        if (!club) throw new Error('Club not found');
+
+        if (club.user.id !== requestingUserId) throw new Error('Forbidden');
 
         club.deletedAt = new Date();
         await em.flush();
