@@ -24,23 +24,23 @@ export class AthleteService {
         });    
     }
 
-    async create(em: EntityManager, user: User, dto: CreateAthleteDto): Promise<Athlete> {
-        const sports = await em.find(Sport, { id: { $in: dto.sportIds } });
-        if (sports.length !== dto.sportIds.length) {
+    async create(em: EntityManager, user: User, athleteData: CreateAthleteDto): Promise<Athlete> {
+        const sports = await em.find(Sport, { id: { $in: athleteData.sportIds } });
+        if (sports.length !== athleteData.sportIds.length) {
             throw new Error('One or more sport IDs are invalid');
         }
 
-        const positions = await em.find(Position, { id: { $in: dto.positionIds } });
-        if (positions.length !== dto.positionIds.length) {
+        const positions = await em.find(Position, { id: { $in: athleteData.positionIds } });
+        if (positions.length !== athleteData.positionIds.length) {
             throw new Error('One or more position IDs are invalid');
         }
 
         const athlete = em.create(Athlete, {
-            firstName: dto.firstName,
-            lastName: dto.lastName,
-            birthDate: dto.birthDate,
-            nationality: dto.nationality,
-            isSigned: dto.isSigned ?? false,
+            firstName: athleteData.firstName,
+            lastName: athleteData.lastName,
+            birthDate: athleteData.birthDate,
+            nationality: athleteData.nationality,
+            isSigned: athleteData.isSigned ?? false,
             user,
         });
 
@@ -51,16 +51,16 @@ export class AthleteService {
         return athlete;
     }
 
-    async update(id: number, updateData: UpdateAthleteDto): Promise<Athlete> {
+    async update(id: number, updateData: UpdateAthleteDto, requestingUserId: number): Promise<Athlete> {
         const em = this.em;
 
         const athlete = await em.findOne(Athlete, { id }, {
             populate: ['sports', 'positions'],
         });
 
-        if (!athlete) {
-            throw new Error('Athlete not found');
-        }
+        if (!athlete) throw new Error('Athlete not found');
+
+        if (athlete.user.id !== requestingUserId) throw new Error('Forbidden');
 
         if (updateData.sportIds) {
             const sports = await em.find(Sport, { id: { $in: updateData.sportIds } });
@@ -92,13 +92,13 @@ export class AthleteService {
         return athlete;
     }
 
-    async delete(id: number): Promise<void> {
+    async delete(id: number, requestingUserId: number): Promise<void> {
         const em = this.em;
 
         const athlete = await em.findOne(Athlete, { id });
-        if (!athlete) {
-            throw new Error('Athlete not found');
-        }
+        if (!athlete) throw new Error('Athlete not found');
+        
+        if (athlete.user.id !== requestingUserId) throw new Error('Forbidden');
 
         athlete.deletedAt = new Date();
         await em.flush();

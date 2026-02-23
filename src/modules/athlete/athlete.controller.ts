@@ -43,11 +43,13 @@ export class AthleteController {
                 return res.status(400).json({ message: 'Invalid athlete ID' });
 
             const payload = req.body as UpdateAthleteDto;
-            const updatedAthlete = await this.athleteService.update(id, payload);
+            const updatedAthlete = await this.athleteService.update(id, payload, req.user!.userId);
             return res.status(200).json({ message: 'Athlete updated', data: updatedAthlete });
         } catch (error: any) {
             if (error.message === 'Athlete not found') 
                 return res.status(404).json({ message: error.message });
+            if (error.message === 'Forbidden') 
+                return res.status(403).json({ message: error.message });
             if (error.message === 'One or more sport IDs are invalid' ||
                 error.message === 'One or more position IDs are invalid') 
                 return res.status(400).json({ message: error.message });
@@ -62,11 +64,13 @@ export class AthleteController {
             if (isNaN(id)) 
                 return res.status(400).json({ message: 'Invalid athlete ID' });
 
-            await this.athleteService.delete(id);
+            await this.athleteService.delete(id, req.user!.userId);
             return res.status(204).send();
         } catch (error: any) {
             if (error.message === 'Athlete not found') 
                 return res.status(404).json({ message: error.message });
+            if (error.message === 'Forbidden') 
+                return res.status(403).json({ message: error.message });
             return res.status(500).json({ message: error.message });
         }
     }
