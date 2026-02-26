@@ -1,7 +1,8 @@
-import { Collection, Entity, ManyToMany, Property } from '@mikro-orm/core';
+import { Collection, Entity, ManyToMany, OneToMany, Property } from '@mikro-orm/core';
 
-import { BaseEntity } from '../../shared/db/baseEntity.entity.js';
+import { Position } from './position.entity.js';
 import { Athlete } from '../athlete/athlete.entity.js';
+import { BaseEntity } from '../../shared/db/baseEntity.entity.js';
 
 @Entity()
 export class Sport extends BaseEntity {
@@ -10,4 +11,9 @@ export class Sport extends BaseEntity {
 
     @ManyToMany(() => Athlete, (athlete) => athlete.sports)
     athletes = new Collection<Athlete>(this);
+
+    // Relación inversa hacia Position para poder popular
+    // las posiciones desde el lado del deporte
+    @OneToMany(() => Position, (position) => position.sport)
+    positions = new Collection<Position>(this);
 }
