@@ -9,6 +9,7 @@ import ClubRouter from './modules/club/club.routes.js';
 import PostRouter from './modules/post/post.routes.js';
 import AuthRouter from './modules/auth/auth.routes.js';
 import AgentRouter from './modules/agent/agent.routes.js';
+import { SportRouter } from './modules/sport/sport.routes.js';
 import AthleteRouter from './modules/athlete/athlete.routes.js';
 
 dotenv.config();
@@ -28,6 +29,7 @@ const routers = {
     agents: new AgentRouter().getRouter(),
     clubs: new ClubRouter().getRouter(),
     posts: new PostRouter().getRouter(),
+    sports: new SportRouter().getRouter(),
 };
 
 app.use('/api/auth', routers.auth);
@@ -36,6 +38,7 @@ app.use('/api/athletes', routers.athletes);
 app.use('/api/agents', routers.agents);
 app.use('/api/clubs', routers.clubs);
 app.use('/api/posts', routers.posts);
+app.use('/api/catalog', routers.sports);
 
 app.use((_, res) => {
     return res.status(404).send({ message: 'Not found' });
