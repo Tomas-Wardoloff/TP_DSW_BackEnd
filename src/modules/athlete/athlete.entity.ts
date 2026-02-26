@@ -1,8 +1,8 @@
 import { Entity, OneToOne, Property, Cascade, Collection, ManyToMany, Rel } from '@mikro-orm/core';
 
 import { User } from '../user/user.entity.js';
-import { Sport } from '../sports/sport.entity.js';
-import { Position } from '../sports/position.entity.js';
+import { Sport } from '../sport/sport.entity.js';
+import { Position } from '../sport/position.entity.js';
 import { BaseEntity } from '../../shared/db/baseEntity.entity.js';
 
 @Entity()

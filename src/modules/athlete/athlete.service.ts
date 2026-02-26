@@ -4,8 +4,8 @@ import { Athlete } from './athlete.entity.js';
 import { orm } from '../../shared/db/orm.js';
 import { CreateAthleteDto, UpdateAthleteDto } from './athlete.dto.js';
 import { User } from '../user/user.entity.js';
-import { Sport } from '../sports/sport.entity.js';
-import { Position } from '../sports/position.entity.js';
+import { Sport } from '../sport/sport.entity.js';
+import { Position } from '../sport/position.entity.js';
 
 export class AthleteService {
     private get em(): EntityManager {
