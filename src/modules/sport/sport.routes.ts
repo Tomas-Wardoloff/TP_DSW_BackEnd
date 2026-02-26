@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { SportController } from "./sport.controller";
-import { authMiddleware } from "../auth/auth.middleware";
+import { SportController } from "./sport.controller.js";
+import { authMiddleware } from "../auth/auth.middleware.js";
 
 export class SportRouter {
     private router = Router();

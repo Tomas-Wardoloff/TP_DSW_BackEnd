@@ -1,7 +1,7 @@
 import { Entity, Unique, Rel, ManyToOne } from "@mikro-orm/core";
 
-import { User } from "../user/user.entity";
-import { Post } from "./post.entity";
+import { Post } from "./post.entity.js";
+import { User } from "../user/user.entity.js";
 import { BaseEntity } from "../../shared/db/baseEntity.entity.js";
 
 @Entity()

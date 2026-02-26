@@ -1,4 +1,4 @@
-import { Collection, Entity, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
+import { Collection, Entity, ManyToMany, ManyToOne, Property, Rel } from '@mikro-orm/core';
 
 import { Sport } from './sport.entity.js';
 import { Athlete } from '../athlete/athlete.entity.js';
@@ -10,7 +10,7 @@ export class Position extends BaseEntity {
     name!: string;
 
     @ManyToOne(() => Sport)
-    sport!: Sport;
+    sport!: Rel<Sport>;
 
     @ManyToMany(() => Athlete, (athlete) => athlete.positions)
     athletes = new Collection<Athlete>(this);

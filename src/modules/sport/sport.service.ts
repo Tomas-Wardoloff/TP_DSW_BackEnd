@@ -1,6 +1,6 @@
 import { EntityManager } from "@mikro-orm/mysql";
 
-import { Sport } from "./sport.entity";
+import { Sport } from "./sport.entity.js";
 import { orm } from "../../shared/db/orm.js";
 import { Position } from "./position.entity.js";
 
