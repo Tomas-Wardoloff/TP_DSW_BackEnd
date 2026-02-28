@@ -13,7 +13,12 @@ export class PostService {
 
     async findAll(): Promise<Post[]> {
         return this.em.find(Post, {}, {
-            populate: ['author', 'likes'],
+            populate: ['author', 
+                'author.athleteProfile',
+                'author.clubProfile',
+                'author.agentProfile',
+                'comments',
+                'likes'],
             orderBy: { createdAt: 'DESC' },
         });
     }
@@ -25,6 +30,9 @@ export class PostService {
                 'likes',
                 'comments',
                 'comments.author',
+                'comments.author.athleteProfile',
+                'comments.author.clubProfile',
+                'comments.author.agentProfile',
                 'comments.replies',
                 'comments.replies.author',
             ],

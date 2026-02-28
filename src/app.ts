@@ -44,7 +44,7 @@ app.use((_, res) => {
     return res.status(404).send({ message: 'Not found' });
 });
 
-await syncSchema(); // never in production
+//await syncSchema(); // never in production, lo comento para que no borre la base de datos cada vez que reinicio el servidor
 
 const port = process.env.PORT || 3000;
 

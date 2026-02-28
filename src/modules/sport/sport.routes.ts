@@ -12,24 +12,24 @@ export class SportRouter {
 
     private initializeRoutes() {
         this.router.get('/sports',
-            authMiddleware,
+            /*authMiddleware,*/
             (req, res) => this.sportController.findAllSports(req, res)
         );
 
         this.router.get('/sports/:id',
-            authMiddleware,
+            /*authMiddleware,*/
             (req, res) => this.sportController.findOneSport(req, res)
         );
 
         // GET /catalog/positions
         // GET /catalog/positions?sportId=1
         this.router.get('/positions',
-            authMiddleware,
+            /*authMiddleware,*/
             (req, res) => this.sportController.findAllPositions(req, res)
         );
 
         this.router.get('/positions/:id',
-            authMiddleware,
+            /*authMiddleware,*/
             (req, res) => this.sportController.findOnePosition(req, res)
         );
     }
