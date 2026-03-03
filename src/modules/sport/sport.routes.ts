@@ -2,7 +2,7 @@ import { Router } from "express";
 import { SportController } from "./sport.controller.js";
 import { authMiddleware } from "../auth/auth.middleware.js";
 
-export class SportRouter {
+export default class SportRouter {
     private router = Router();
     private sportController = new SportController();
 
