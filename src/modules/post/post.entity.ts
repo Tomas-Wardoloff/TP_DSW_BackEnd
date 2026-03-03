@@ -1,9 +1,9 @@
-import { Entity, Property, ManyToOne, OneToMany, Rel, Collection } from "@mikro-orm/core";
+import { Entity, Property, ManyToOne, OneToMany, Rel, Collection } from '@mikro-orm/core';
 
-import { Like } from "./like.entity.js";
-import { User } from "../user/user.entity.js";
-import { Comment } from "./comment.entity.js";
-import { BaseEntity } from "../../shared/db/baseEntity.entity.js";
+import { Like } from './like.entity.js';
+import { User } from '../user/user.entity.js';
+import { Comment } from './comment.entity.js';
+import { BaseEntity } from '../../shared/db/baseEntity.entity.js';
 
 @Entity()
 export class Post extends BaseEntity {

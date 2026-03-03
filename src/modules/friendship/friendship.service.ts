@@ -11,36 +11,48 @@ export class FriendshipService {
     }
 
     async findFriends(userId: number): Promise<Friendship[]> {
-        return this.em.find(Friendship, {
-            $or: [
-                { requester: { id: userId } },
-                { addressee: { id: userId } },
-            ],
-            status: FriendshipStatus.ACCEPTED,
-        }, {
-            populate: ['requester', 'addressee'],
-        });
+        return this.em.find(
+            Friendship,
+            {
+                $or: [{ requester: { id: userId } }, { addressee: { id: userId } }],
+                status: FriendshipStatus.ACCEPTED,
+            },
+            {
+                populate: ['requester', 'addressee'],
+            }
+        );
     }
 
     async findPendingReceived(userId: number): Promise<Friendship[]> {
-        return this.em.find(Friendship, {
-            addressee: { id: userId },
-            status: FriendshipStatus.PENDING,
-        }, {
-            populate: ['requester'],
-        });
+        return this.em.find(
+            Friendship,
+            {
+                addressee: { id: userId },
+                status: FriendshipStatus.PENDING,
+            },
+            {
+                populate: ['requester'],
+            }
+        );
     }
 
     async findPendingSent(userId: number): Promise<Friendship[]> {
-        return this.em.find(Friendship, {
-            requester: { id: userId },
-            status: FriendshipStatus.PENDING,
-        }, {
-            populate: ['addressee'],
-        });
+        return this.em.find(
+            Friendship,
+            {
+                requester: { id: userId },
+                status: FriendshipStatus.PENDING,
+            },
+            {
+                populate: ['addressee'],
+            }
+        );
     }
 
-    async sendRequest(friendshipData: CreateFriendshipDto, requesterId: number): Promise<Friendship> {
+    async sendRequest(
+        friendshipData: CreateFriendshipDto,
+        requesterId: number
+    ): Promise<Friendship> {
         const em = this.em;
 
         // No podés mandarte una solicitud a vos mismo
@@ -63,11 +75,10 @@ export class FriendshipService {
         });
 
         if (existing) {
-            if (existing.status === FriendshipStatus.PENDING) 
+            if (existing.status === FriendshipStatus.PENDING)
                 throw new Error('Friend request already sent');
-            if (existing.status === FriendshipStatus.ACCEPTED) 
-                throw new Error('Already friends');
-            
+            if (existing.status === FriendshipStatus.ACCEPTED) throw new Error('Already friends');
+
             // Si fue REJECTED, permitimos reenviar la solicitud
             if (existing.status === FriendshipStatus.REJECTED) {
                 existing.status = FriendshipStatus.PENDING;
@@ -96,16 +107,19 @@ export class FriendshipService {
     ): Promise<Friendship> {
         const em = this.em;
 
-        const friendship = await em.findOne(Friendship, { id: friendshipId }, {
-            populate: ['requester', 'addressee'],
-        });
+        const friendship = await em.findOne(
+            Friendship,
+            { id: friendshipId },
+            {
+                populate: ['requester', 'addressee'],
+            }
+        );
 
         if (!friendship) throw new Error('Friend request not found');
 
-        if (friendship.addressee.id !== requestingUserId)
-            throw new Error('Forbidden');
+        if (friendship.addressee.id !== requestingUserId) throw new Error('Forbidden');
 
-        if (friendship.status !== FriendshipStatus.PENDING) 
+        if (friendship.status !== FriendshipStatus.PENDING)
             throw new Error('Friend request is no longer pending');
 
         friendship.status = updateData.status;
@@ -117,9 +131,13 @@ export class FriendshipService {
     async remove(friendshipId: number, requestingUserId: number): Promise<void> {
         const em = this.em;
 
-        const friendship = await em.findOne(Friendship, { id: friendshipId }, {
-            populate: ['requester', 'addressee'],
-        });
+        const friendship = await em.findOne(
+            Friendship,
+            { id: friendshipId },
+            {
+                populate: ['requester', 'addressee'],
+            }
+        );
 
         if (!friendship) throw new Error('Friend request not found');
 

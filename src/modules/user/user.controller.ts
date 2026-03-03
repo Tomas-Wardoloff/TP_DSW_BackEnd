@@ -21,13 +21,11 @@ export class UserController {
         try {
             const id = Number.parseInt(req.params.id);
 
-            if (isNaN(id)) 
-                return res.status(400).json({ message: 'Invalid user ID' });
+            if (isNaN(id)) return res.status(400).json({ message: 'Invalid user ID' });
 
             const user = await this.userService.findOne(id);
 
-            if (!user) 
-                return res.status(404).json({ message: 'User not found' });
+            if (!user) return res.status(404).json({ message: 'User not found' });
 
             return res.status(200).json({ message: 'User found', data: user });
         } catch (error: any) {
@@ -53,14 +51,13 @@ export class UserController {
         try {
             const id = Number.parseInt(req.params.id);
 
-            if (isNaN(id))
-                return res.status(400).json({ message: 'Invalid user ID' });
-            
+            if (isNaN(id)) return res.status(400).json({ message: 'Invalid user ID' });
+
             const payload = req.body as UpdateUserDto;
             const updatedUser = await this.userService.update(id, payload, req.user!.userId);
             return res.status(200).json({ message: 'User updated', data: updatedUser });
         } catch (error: any) {
-            if (error.message === 'User not found') 
+            if (error.message === 'User not found')
                 return res.status(404).json({ message: error.message });
             if (error.message === 'Forbidden')
                 return res.status(403).json({ message: error.message });
@@ -74,13 +71,12 @@ export class UserController {
         try {
             const id = Number.parseInt(req.params.id);
 
-            if (isNaN(id))
-                return res.status(400).json({ message: 'Invalid user ID' });
-            
+            if (isNaN(id)) return res.status(400).json({ message: 'Invalid user ID' });
+
             await this.userService.delete(id, req.user!.userId);
             return res.status(204).send();
         } catch (error: any) {
-            if (error.message === 'User not found') 
+            if (error.message === 'User not found')
                 return res.status(404).json({ message: error.message });
             if (error.message === 'Forbidden')
                 return res.status(403).json({ message: error.message });

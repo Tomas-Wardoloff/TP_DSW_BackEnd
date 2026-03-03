@@ -1,12 +1,12 @@
-import { Entity, ManyToOne, Enum, Rel } from "@mikro-orm/core";
+import { Entity, ManyToOne, Enum, Rel } from '@mikro-orm/core';
 
-import { User } from "../user/user.entity.js";
-import { BaseEntity } from "../../shared/db/baseEntity.entity.js";
+import { User } from '../user/user.entity.js';
+import { BaseEntity } from '../../shared/db/baseEntity.entity.js';
 
 export enum FriendshipStatus {
-  PENDING = 'pending',
-  ACCEPTED = 'accepted',
-  REJECTED = 'rejected',
+    PENDING = 'pending',
+    ACCEPTED = 'accepted',
+    REJECTED = 'rejected',
 }
 
 @Entity()

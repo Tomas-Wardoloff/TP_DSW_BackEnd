@@ -10,7 +10,7 @@ export class AuthController {
             const tokens = await this.authService.login(req.body);
             return res.status(200).json({ message: 'Login successful', data: tokens });
         } catch (error: any) {
-            if (error.message === 'Invalid credentials') 
+            if (error.message === 'Invalid credentials')
                 return res.status(401).json({ message: error.message });
             return res.status(500).json({ message: error.message });
         }
@@ -22,7 +22,7 @@ export class AuthController {
             const tokens = await this.authService.refresh(refreshToken);
             return res.status(200).json({ message: 'Token refreshed', data: tokens });
         } catch (error: any) {
-            if (error.message === 'Invalid refresh token') 
+            if (error.message === 'Invalid refresh token')
                 return res.status(401).json({ message: error.message });
             return res.status(500).json({ message: error.message });
         }

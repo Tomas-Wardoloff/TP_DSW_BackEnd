@@ -1,9 +1,9 @@
-import { EntityManager } from "@mikro-orm/mysql";
+import { EntityManager } from '@mikro-orm/mysql';
 
-import { Club } from "./club.entity.js"
-import { orm } from "../../shared/db/orm.js"
-import { User } from "../user/user.entity.js";
-import { CreateClubDto, UpdateClubDto } from "./club.dto.js";
+import { Club } from './club.entity.js';
+import { orm } from '../../shared/db/orm.js';
+import { User } from '../user/user.entity.js';
+import { CreateClubDto, UpdateClubDto } from './club.dto.js';
 
 export class ClubService {
     private get em(): EntityManager {
@@ -11,15 +11,23 @@ export class ClubService {
     }
 
     async findAll(): Promise<Club[]> {
-        return this.em.find(Club, {}, {
-            populate: ['agents', 'user'],
-        });
+        return this.em.find(
+            Club,
+            {},
+            {
+                populate: ['agents', 'user'],
+            }
+        );
     }
 
     async findOne(id: number): Promise<Club | null> {
-        return this.em.findOne(Club, { id }, {
-            populate: ['agents', 'user'],
-        });
+        return this.em.findOne(
+            Club,
+            { id },
+            {
+                populate: ['agents', 'user'],
+            }
+        );
     }
 
     async create(em: EntityManager, user: User, createClubDto: CreateClubDto): Promise<Club> {
@@ -38,7 +46,7 @@ export class ClubService {
         const em = this.em;
 
         const club = await em.findOne(Club, { id });
-        
+
         if (!club) throw new Error('Club not found');
 
         if (club.user.id !== requestingUserId) throw new Error('Forbidden');
@@ -57,7 +65,7 @@ export class ClubService {
         const em = this.em;
 
         const club = await em.findOne(Club, { id });
-        
+
         if (!club) throw new Error('Club not found');
 
         if (club.user.id !== requestingUserId) throw new Error('Forbidden');

@@ -1,6 +1,6 @@
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
 
-import { SportService } from "./sport.service.js";
+import { SportService } from './sport.service.js';
 
 export class SportController {
     private sportService = new SportService();
@@ -36,9 +36,8 @@ export class SportController {
                 ? Number.parseInt(req.query.sportId as string)
                 : undefined;
 
-            if (req.query.sportId && isNaN(sportId!)) 
+            if (req.query.sportId && isNaN(sportId!))
                 return res.status(400).json({ message: 'Invalid sportId' });
-        
 
             const positions = await this.sportService.findAllPositions(sportId);
             return res.status(200).json({ message: 'Positions found', data: positions });
@@ -54,7 +53,7 @@ export class SportController {
             if (isNaN(id)) return res.status(400).json({ message: 'Invalid id' });
 
             const position = await this.sportService.findOnePosition(id);
-            
+
             if (!position) return res.status(404).json({ message: 'Position not found' });
 
             return res.status(200).json({ message: 'Position found', data: position });

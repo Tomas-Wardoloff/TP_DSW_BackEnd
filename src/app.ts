@@ -9,7 +9,7 @@ import ClubRouter from './modules/club/club.routes.js';
 import PostRouter from './modules/post/post.routes.js';
 import AuthRouter from './modules/auth/auth.routes.js';
 import AgentRouter from './modules/agent/agent.routes.js';
-import SportRouter  from './modules/sport/sport.routes.js';
+import SportRouter from './modules/sport/sport.routes.js';
 import AthleteRouter from './modules/athlete/athlete.routes.js';
 import FriendshipRouter from './modules/friendship/friendship.routes.js';
 

@@ -11,7 +11,11 @@ export class CommentService {
         return orm.em.fork();
     }
 
-    async create(postId: number, commentData: CreateCommentDto, authorId: number): Promise<Comment> {
+    async create(
+        postId: number,
+        commentData: CreateCommentDto,
+        authorId: number
+    ): Promise<Comment> {
         const em = this.em;
 
         const post = await em.findOne(Post, { id: postId });
@@ -49,13 +53,21 @@ export class CommentService {
         return comment;
     }
 
-    async update(commentId: number, updateData: UpdateCommentDto, requestingUserId: number): Promise<Comment> {
+    async update(
+        commentId: number,
+        updateData: UpdateCommentDto,
+        requestingUserId: number
+    ): Promise<Comment> {
         const em = this.em;
 
-        const comment = await em.findOne(Comment, { id: commentId }, {
-            populate: ['author'],
-        });
-        
+        const comment = await em.findOne(
+            Comment,
+            { id: commentId },
+            {
+                populate: ['author'],
+            }
+        );
+
         if (!comment) throw new Error('Comment not found');
 
         if (comment.author.id !== requestingUserId) throw new Error('Forbidden');
@@ -68,9 +80,13 @@ export class CommentService {
     async delete(commentId: number, requestingUserId: number): Promise<void> {
         const em = this.em;
 
-        const comment = await em.findOne(Comment, { id: commentId }, {
-            populate: ['author'],
-        });
+        const comment = await em.findOne(
+            Comment,
+            { id: commentId },
+            {
+                populate: ['author'],
+            }
+        );
         if (!comment) throw new Error('Comment not found');
 
         if (comment.author.id !== requestingUserId) throw new Error('Forbidden');

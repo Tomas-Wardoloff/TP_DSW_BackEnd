@@ -15,41 +15,39 @@ export default class FriendshipRouter {
 
     private initializeRoutes() {
         // Amistades aceptadas del usuario autenticado
-        this.router.get('/friends',
-            authMiddleware,
-            (req, res) => this.friendshipController.findFriends(req, res)
+        this.router.get('/friends', authMiddleware, (req, res) =>
+            this.friendshipController.findFriends(req, res)
         );
 
         // Solicitudes recibidas pendientes
-        this.router.get('/pending/received',
-            authMiddleware,
-            (req, res) => this.friendshipController.findPendingReceived(req, res)
+        this.router.get('/pending/received', authMiddleware, (req, res) =>
+            this.friendshipController.findPendingReceived(req, res)
         );
 
         // Solicitudes enviadas pendientes
-        this.router.get('/pending/sent',
-            authMiddleware,
-            (req, res) => this.friendshipController.findPendingSent(req, res)
+        this.router.get('/pending/sent', authMiddleware, (req, res) =>
+            this.friendshipController.findPendingSent(req, res)
         );
 
         // Enviar solicitud de amistad
-        this.router.post('/',
+        this.router.post(
+            '/',
             authMiddleware,
             validationMiddleware(CreateFriendshipDto),
             (req, res) => this.friendshipController.sendRequest(req, res)
         );
 
         // Aceptar o rechazar una solicitud recibida
-        this.router.patch('/:id',
+        this.router.patch(
+            '/:id',
             authMiddleware,
             validationMiddleware(UpdateFriendshipDto),
             (req, res) => this.friendshipController.respondToRequest(req, res)
         );
 
         // Eliminar amistad o cancelar solicitud pendiente
-        this.router.delete('/:id',
-            authMiddleware,
-            (req, res) => this.friendshipController.remove(req, res)
+        this.router.delete('/:id', authMiddleware, (req, res) =>
+            this.friendshipController.remove(req, res)
         );
     }
 

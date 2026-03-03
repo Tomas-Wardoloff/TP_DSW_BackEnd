@@ -13,15 +13,23 @@ export class AthleteService {
     }
 
     async findAll(): Promise<Athlete[]> {
-        return this.em.find(Athlete, {}, {
-            populate: ['sports', 'positions', 'user'],
-        });
+        return this.em.find(
+            Athlete,
+            {},
+            {
+                populate: ['sports', 'positions', 'user'],
+            }
+        );
     }
 
     async findOne(id: number): Promise<Athlete | null> {
-        return this.em.findOne(Athlete, { id }, {
-            populate: ['sports', 'positions', 'user'],
-        });    
+        return this.em.findOne(
+            Athlete,
+            { id },
+            {
+                populate: ['sports', 'positions', 'user'],
+            }
+        );
     }
 
     async create(em: EntityManager, user: User, athleteData: CreateAthleteDto): Promise<Athlete> {
@@ -51,12 +59,20 @@ export class AthleteService {
         return athlete;
     }
 
-    async update(id: number, updateData: UpdateAthleteDto, requestingUserId: number): Promise<Athlete> {
+    async update(
+        id: number,
+        updateData: UpdateAthleteDto,
+        requestingUserId: number
+    ): Promise<Athlete> {
         const em = this.em;
 
-        const athlete = await em.findOne(Athlete, { id }, {
-            populate: ['sports', 'positions'],
-        });
+        const athlete = await em.findOne(
+            Athlete,
+            { id },
+            {
+                populate: ['sports', 'positions'],
+            }
+        );
 
         if (!athlete) throw new Error('Athlete not found');
 
@@ -97,7 +113,7 @@ export class AthleteService {
 
         const athlete = await em.findOne(Athlete, { id });
         if (!athlete) throw new Error('Athlete not found');
-        
+
         if (athlete.user.id !== requestingUserId) throw new Error('Forbidden');
 
         athlete.deletedAt = new Date();

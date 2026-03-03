@@ -1,4 +1,4 @@
-import { IsString, IsInt, IsOptional, MinLength, IsArray } from "class-validator";
+import { IsString, IsInt, IsOptional, MinLength, IsArray } from 'class-validator';
 
 export class CreateAgentDto {
     @IsString()
@@ -15,7 +15,7 @@ export class UpdateAgentDto {
     @IsString()
     @MinLength(2)
     firstName?: string;
-    
+
     @IsOptional()
     @IsString()
     @MinLength(2)

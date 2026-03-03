@@ -25,7 +25,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
         req.user = decoded;
         next();
     } catch (error: any) {
-        if (error.name === 'TokenExpiredError') 
+        if (error.name === 'TokenExpiredError')
             return res.status(401).json({ message: 'Token expired' });
         return res.status(401).json({ message: 'Invalid token' });
     }
@@ -33,12 +33,11 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
 
 export function authorizationMiddleware(...allowedTypes: UserType[]) {
     return (req: Request, res: Response, next: NextFunction) => {
-        if (!req.user)
-            return res.status(401).json({ message: 'Not authenticated' });
+        if (!req.user) return res.status(401).json({ message: 'Not authenticated' });
 
-        if (!allowedTypes.includes(req.user.userType)) 
+        if (!allowedTypes.includes(req.user.userType))
             return res.status(403).json({ message: 'Forbidden' });
 
         next();
     };
-}   
+}

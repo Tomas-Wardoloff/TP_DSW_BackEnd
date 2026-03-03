@@ -1,5 +1,5 @@
-import { Type } from "class-transformer";
-import { IsString, IsDate, MinLength, IsOptional } from "class-validator";
+import { Type } from 'class-transformer';
+import { IsString, IsDate, MinLength, IsOptional } from 'class-validator';
 
 export class CreateClubDto {
     @IsString()
@@ -8,7 +8,7 @@ export class CreateClubDto {
 
     @IsString()
     address!: string;
-    
+
     @Type(() => Date)
     @IsDate()
     openingDate!: Date;
@@ -23,7 +23,7 @@ export class UpdateClubDto {
     @IsOptional()
     @IsString()
     address?: string;
-    
+
     @IsOptional()
     @Type(() => Date)
     @IsDate()

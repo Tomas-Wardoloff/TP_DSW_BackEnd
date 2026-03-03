@@ -18,7 +18,9 @@ export class FriendshipController {
     async findPendingReceived(req: Request, res: Response) {
         try {
             const requests = await this.friendshipService.findPendingReceived(req.user!.userId);
-            return res.status(200).json({ message: 'Pending received requests found', data: requests });
+            return res
+                .status(200)
+                .json({ message: 'Pending received requests found', data: requests });
         } catch (error: any) {
             return res.status(500).json({ message: error.message });
         }
@@ -36,17 +38,16 @@ export class FriendshipController {
     async sendRequest(req: Request, res: Response) {
         try {
             const payload = req.body as CreateFriendshipDto;
-            const friendship = await this.friendshipService.sendRequest(
-                payload,
-                req.user!.userId
-            );
+            const friendship = await this.friendshipService.sendRequest(payload, req.user!.userId);
             return res.status(201).json({ message: 'Friend request sent', data: friendship });
         } catch (error: any) {
             if (error.message === 'User not found')
                 return res.status(404).json({ message: error.message });
-            if (error.message === 'Cannot send friend request to yourself' ||
+            if (
+                error.message === 'Cannot send friend request to yourself' ||
                 error.message === 'Friend request already sent' ||
-                error.message === 'Already friends')
+                error.message === 'Already friends'
+            )
                 return res.status(409).json({ message: error.message });
             return res.status(500).json({ message: error.message });
         }
@@ -69,8 +70,10 @@ export class FriendshipController {
                 return res.status(404).json({ message: error.message });
             if (error.message === 'Forbidden')
                 return res.status(403).json({ message: error.message });
-            if (error.message === 'Friend request is no longer pending' ||
-                error.message === 'Invalid status')
+            if (
+                error.message === 'Friend request is no longer pending' ||
+                error.message === 'Invalid status'
+            )
                 return res.status(400).json({ message: error.message });
             return res.status(500).json({ message: error.message });
         }

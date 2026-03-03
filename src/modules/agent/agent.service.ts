@@ -1,26 +1,33 @@
-import { EntityManager } from "@mikro-orm/mysql"
+import { EntityManager } from '@mikro-orm/mysql';
 
-import { Agent } from "./agent.entity.js"
-import { orm } from "../../shared/db/orm.js"
-import { User } from "../user/user.entity.js";
-import { CreateAgentDto, UpdateAgentDto } from "./agent.dto.js";
+import { Agent } from './agent.entity.js';
+import { orm } from '../../shared/db/orm.js';
+import { User } from '../user/user.entity.js';
+import { CreateAgentDto, UpdateAgentDto } from './agent.dto.js';
 
 export class AgentService {
     private get em(): EntityManager {
         return orm.em.fork();
     }
-    
 
     async findAll(): Promise<Agent[]> {
-        return this.em.find(Agent, {}, {
-            populate: ['clubs', 'user'],
-        });
+        return this.em.find(
+            Agent,
+            {},
+            {
+                populate: ['clubs', 'user'],
+            }
+        );
     }
 
     async findOne(id: number): Promise<Agent | null> {
-        return this.em.findOne(Agent, { id }, {
-            populate: ['clubs', 'user'],
-        });
+        return this.em.findOne(
+            Agent,
+            { id },
+            {
+                populate: ['clubs', 'user'],
+            }
+        );
     }
 
     async create(em: EntityManager, user: User, agentData: CreateAgentDto): Promise<Agent> {
@@ -38,10 +45,10 @@ export class AgentService {
         const em = this.em;
 
         const agent = await em.findOne(Agent, { id });
-        
+
         if (!agent) throw new Error('Agent not found');
 
-        if (agent.user.id !== requestingUserId) throw new Error('Forbidden')
+        if (agent.user.id !== requestingUserId) throw new Error('Forbidden');
 
         em.assign(agent, {
             ...(updateData.firstName && { firstName: updateData.firstName }),
@@ -60,7 +67,7 @@ export class AgentService {
             throw new Error('Agent not found');
         }
 
-        if (agent.user.id !== requestingUserId) throw new Error('Forbidden')
+        if (agent.user.id !== requestingUserId) throw new Error('Forbidden');
 
         agent.deletedAt = new Date();
         await em.flush();

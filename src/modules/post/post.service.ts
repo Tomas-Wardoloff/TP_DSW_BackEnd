@@ -1,41 +1,46 @@
-import { EntityManager } from "@mikro-orm/mysql";
+import { EntityManager } from '@mikro-orm/mysql';
 
-import { Post } from "./post.entity.js";
-import { Like } from "./like.entity.js";
-import { User } from "../user/user.entity.js";
-import { orm } from "../../shared/db/orm.js";
-import { CreatePostDto, UpdatePostDto } from "./post.dto.js";
-import { buildPaginatedResult, getPaginationParams } from "../../shared/utils/pagination.helper.js";
-import { PaginatedResult, PaginationDto } from "../../shared/dtos/pagination.dto.js";
-import { Friendship, FriendshipStatus } from "../friendship/friendship.entity.js";
+import { Post } from './post.entity.js';
+import { Like } from './like.entity.js';
+import { User } from '../user/user.entity.js';
+import { orm } from '../../shared/db/orm.js';
+import { CreatePostDto, UpdatePostDto } from './post.dto.js';
+import { buildPaginatedResult, getPaginationParams } from '../../shared/utils/pagination.helper.js';
+import { PaginatedResult, PaginationDto } from '../../shared/dtos/pagination.dto.js';
+import { Friendship, FriendshipStatus } from '../friendship/friendship.entity.js';
 
 export class PostService {
     private get em(): EntityManager {
         return orm.em.fork();
     }
 
-    async findAll(requestingUserId: number, pagination: PaginationDto): Promise<PaginatedResult<Post>> {
+    async findAll(
+        requestingUserId: number,
+        pagination: PaginationDto
+    ): Promise<PaginatedResult<Post>> {
         const em = this.em;
         const { limit, offset } = getPaginationParams(pagination);
 
         // Primero obtenemos los IDs de los amigos del usuario.
-        const friendships = await em.find(Friendship, {
-            $or: [
-                { requester: { id: requestingUserId } },
-                { addressee: { id: requestingUserId } },
-            ],
-            status: FriendshipStatus.ACCEPTED,
-        }, {
-            populate: ['requester', 'addressee'],
-        });
+        const friendships = await em.find(
+            Friendship,
+            {
+                $or: [
+                    { requester: { id: requestingUserId } },
+                    { addressee: { id: requestingUserId } },
+                ],
+                status: FriendshipStatus.ACCEPTED,
+            },
+            {
+                populate: ['requester', 'addressee'],
+            }
+        );
 
         // Extraemos los IDs del otro usuario en cada amistad, incluyendo al propio usuario para que vea sus propios posts
         const friendIds = [
             requestingUserId,
-            ...friendships.map(f =>
-                f.requester.id === requestingUserId
-                    ? f.addressee.id
-                    : f.requester.id
+            ...friendships.map((f) =>
+                f.requester.id === requestingUserId ? f.addressee.id : f.requester.id
             ),
         ];
 
@@ -55,25 +60,26 @@ export class PostService {
     }
 
     async findOne(id: number): Promise<Post | null> {
-        return this.em.findOne(Post, { id }, {
-            populate: [
-                'author',
-                'likes',
-                'comments',
-                'comments.author',
-                'comments.author.athleteProfile',
-                'comments.author.clubProfile',
-                'comments.author.agentProfile',
-                'comments.replies',
-                'comments.replies.author',
-            ],
-        });
+        return this.em.findOne(
+            Post,
+            { id },
+            {
+                populate: [
+                    'author',
+                    'likes',
+                    'comments',
+                    'comments.author',
+                    'comments.author.athleteProfile',
+                    'comments.author.clubProfile',
+                    'comments.author.agentProfile',
+                    'comments.replies',
+                    'comments.replies.author',
+                ],
+            }
+        );
     }
 
-    async findByUser(
-        userId: number,
-        pagination: PaginationDto
-    ): Promise<PaginatedResult<Post>> {
+    async findByUser(userId: number, pagination: PaginationDto): Promise<PaginatedResult<Post>> {
         const em = this.em;
         const { limit, offset } = getPaginationParams(pagination);
         const where = { author: { id: userId } };
@@ -133,7 +139,10 @@ export class PostService {
         await em.flush();
     }
 
-    async toggleLike(postId: number, requestingUserId: number): Promise<{ liked: boolean; totalLikes: number }> {
+    async toggleLike(
+        postId: number,
+        requestingUserId: number
+    ): Promise<{ liked: boolean; totalLikes: number }> {
         const em = this.em;
 
         const post = await em.findOne(Post, { id: postId });

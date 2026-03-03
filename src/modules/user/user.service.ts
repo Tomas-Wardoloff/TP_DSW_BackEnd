@@ -5,7 +5,7 @@ import { orm } from '../../shared/db/orm.js';
 import { User, UserType } from './user.entity.js';
 import { CreateUserDto, UpdateUserDto } from './user.dto.js';
 import { AthleteService } from '../athlete/athlete.service.js';
-import { AgentService } from '../agent/agent.service.js'
+import { AgentService } from '../agent/agent.service.js';
 import { ClubService } from '../club/club.service.js';
 
 export class UserService {
@@ -18,9 +18,7 @@ export class UserService {
     }
 
     async findAll(userType?: UserType): Promise<User[]> {
-        const where = userType && Object.values(UserType).includes(userType)
-            ? { userType }
-            : {};
+        const where = userType && Object.values(UserType).includes(userType) ? { userType } : {};
 
         return this.em.find(User, where, {
             populate: ['athleteProfile', 'clubProfile', 'agentProfile'],
@@ -32,7 +30,7 @@ export class UserService {
             User,
             { id },
             { populate: ['athleteProfile', 'clubProfile', 'agentProfile'] }
-        );   
+        );
     }
 
     async findByEmail(email: string): Promise<User | null> {
@@ -81,7 +79,6 @@ export class UserService {
         if (!user) throw new Error('User not found');
 
         if (user.id !== requestingUserId) throw new Error('Forbidden');
-        
 
         if (updateData.email && updateData.email !== user.email) {
             const isEmailTaken = await this.findByEmail(updateData.email);
@@ -97,7 +94,7 @@ export class UserService {
         em.assign(user, updateData);
         await em.flush();
 
-        return user
+        return user;
     }
 
     async delete(id: number, requestingUserId: number): Promise<void> {
@@ -110,7 +107,7 @@ export class UserService {
         );
 
         if (!user) throw new Error('User not found');
-    
+
         if (user.id !== requestingUserId) throw new Error('Forbidden');
 
         const now = new Date();
@@ -138,5 +135,4 @@ export class UserService {
             throw new Error('Profile data is required');
         }
     }
-
 }

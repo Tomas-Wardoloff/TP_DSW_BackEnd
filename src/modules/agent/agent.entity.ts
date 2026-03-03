@@ -11,7 +11,7 @@ export class Agent extends BaseEntity {
 
     @Property()
     lastName!: string;
-    
+
     @ManyToMany(() => Club, (club) => club.agents, { owner: true })
     clubs = new Collection<Club>(this);
 

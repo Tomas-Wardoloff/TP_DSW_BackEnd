@@ -3,7 +3,6 @@ import { Request, Response } from 'express';
 import { AgentService } from './agent.service.js';
 import { UpdateAgentDto } from './agent.dto.js';
 
-
 export class AgentController {
     private agentService = new AgentService();
 
@@ -45,9 +44,9 @@ export class AgentController {
             const updatedAgent = await this.agentService.update(id, payload, req.user!.userId);
             return res.status(200).json({ message: 'Agent updated', data: updatedAgent });
         } catch (error: any) {
-            if (error.message === 'Agent not found') 
+            if (error.message === 'Agent not found')
                 return res.status(404).json({ message: error.message });
-            if (error.message === 'Forbidden') 
+            if (error.message === 'Forbidden')
                 return res.status(403).json({ message: error.message });
             return res.status(500).json({ message: error.message });
         }
@@ -63,9 +62,9 @@ export class AgentController {
             await this.agentService.delete(id, req.user!.userId);
             return res.status(204).send();
         } catch (error: any) {
-            if (error.message === 'Agent not found') 
+            if (error.message === 'Agent not found')
                 return res.status(404).json({ message: error.message });
-            if (error.message === 'Forbidden') 
+            if (error.message === 'Forbidden')
                 return res.status(403).json({ message: error.message });
             return res.status(500).json({ message: error.message });
         }

@@ -1,8 +1,8 @@
-import { EntityManager } from "@mikro-orm/mysql";
+import { EntityManager } from '@mikro-orm/mysql';
 
-import { Sport } from "./sport.entity.js";
-import { orm } from "../../shared/db/orm.js";
-import { Position } from "./position.entity.js";
+import { Sport } from './sport.entity.js';
+import { orm } from '../../shared/db/orm.js';
+import { Position } from './position.entity.js';
 
 export class SportService {
     private get em(): EntityManager {
@@ -10,16 +10,24 @@ export class SportService {
     }
 
     async findAllSports(): Promise<Sport[]> {
-        return this.em.find(Sport, {}, {
-            populate: ['positions'],
-            orderBy: { name: 'ASC' },
-        });
+        return this.em.find(
+            Sport,
+            {},
+            {
+                populate: ['positions'],
+                orderBy: { name: 'ASC' },
+            }
+        );
     }
 
     async findOneSport(id: number): Promise<Sport | null> {
-        return this.em.findOne(Sport, { id }, {
-            populate: ['positions'],
-        });
+        return this.em.findOne(
+            Sport,
+            { id },
+            {
+                populate: ['positions'],
+            }
+        );
     }
 
     async findAllPositions(sportId?: number): Promise<Position[]> {
@@ -31,8 +39,12 @@ export class SportService {
     }
 
     async findOnePosition(id: number): Promise<Position | null> {
-        return this.em.findOne(Position, { id }, {
-            populate: ['sport'],
-        });
+        return this.em.findOne(
+            Position,
+            { id },
+            {
+                populate: ['sport'],
+            }
+        );
     }
 }

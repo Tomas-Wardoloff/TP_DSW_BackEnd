@@ -1,8 +1,16 @@
 import { Type } from 'class-transformer';
-import { IsEmail, IsEnum, IsOptional, IsString, MinLength, ValidateNested, IsPhoneNumber } from 'class-validator';
+import {
+    IsEmail,
+    IsEnum,
+    IsOptional,
+    IsString,
+    MinLength,
+    ValidateNested,
+    IsPhoneNumber,
+} from 'class-validator';
 
 import { UserType } from './user.entity.js';
-import { CreateAgentDto } from '../agent/agent.dto.js'
+import { CreateAgentDto } from '../agent/agent.dto.js';
 import { CreateClubDto } from '../club/club.dto.js';
 import { CreateAthleteDto } from '../athlete/athlete.dto.js';
 

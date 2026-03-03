@@ -13,16 +13,12 @@ export default class AuthRouter {
     }
 
     private initializeRoutes() {
-        this.router.post(
-            '/login',
-            validationMiddleware(LoginDto),
-            (req, res) => this.authController.login(req, res)
+        this.router.post('/login', validationMiddleware(LoginDto), (req, res) =>
+            this.authController.login(req, res)
         );
 
-        this.router.post(
-            '/refresh',
-            validationMiddleware(RefreshTokenDto),
-            (req, res) => this.authController.refresh(req, res)
+        this.router.post('/refresh', validationMiddleware(RefreshTokenDto), (req, res) =>
+            this.authController.refresh(req, res)
         );
     }
 

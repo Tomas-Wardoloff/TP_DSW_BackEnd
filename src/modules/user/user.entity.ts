@@ -1,4 +1,4 @@
-import { Entity, Property, Enum, OneToOne, Rel} from '@mikro-orm/core';
+import { Entity, Property, Enum, OneToOne, Rel } from '@mikro-orm/core';
 
 import { Club } from '../club/club.entity.js';
 import { Agent } from '../agent/agent.entity.js';
