@@ -4,6 +4,7 @@ import { PostService } from "./post.service.js";
 import { CommentService } from "./comment.service.js";
 import { CreatePostDto, UpdatePostDto } from "./post.dto.js";
 import { CreateCommentDto, UpdateCommentDto } from "./comment.dto.js";
+import { PaginationDto } from "../../shared/dtos/pagination.dto.js";
 
 export class PostController {
     private postService = new PostService();   
@@ -11,7 +12,12 @@ export class PostController {
 
     async findAll(req: Request, res: Response) {
         try {
-            const posts = await this.postService.findAll();
+            const pagination: PaginationDto = {
+                page: req.query.page ? Number(req.query.page) : 1,
+                limit: req.query.limit ? Number(req.query.limit) : 10,
+            };
+
+            const posts = await this.postService.findAll(req.user!.userId, pagination);
             return res.status(200).json({ message: 'Posts found', data: posts });
         } catch (error: any) {
             return res.status(500).json({ message: error.message });
@@ -37,10 +43,14 @@ export class PostController {
     async findByUser(req: Request, res: Response) {
         try {
             const userId = Number.parseInt(req.params.userId);
-
             if (isNaN(userId)) return res.status(400).json({ message: 'Invalid id' });
 
-            const posts = await this.postService.findByUser(userId);
+            const pagination: PaginationDto = {
+                page: req.query.page ? Number(req.query.page) : 1,
+                limit: req.query.limit ? Number(req.query.limit) : 10,
+            };
+
+            const posts = await this.postService.findByUser(userId, pagination);
             return res.status(200).json({ message: 'Posts found', data: posts });
         } catch (error: any) {
             return res.status(500).json({ message: error.message });
