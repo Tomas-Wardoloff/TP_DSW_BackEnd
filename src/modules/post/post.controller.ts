@@ -9,7 +9,7 @@ export class PostController {
     private postService = new PostService();   
     private commentService = new CommentService();
 
-        async findAll(req: Request, res: Response) {
+    async findAll(req: Request, res: Response) {
         try {
             const posts = await this.postService.findAll();
             return res.status(200).json({ message: 'Posts found', data: posts });
