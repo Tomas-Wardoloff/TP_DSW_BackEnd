@@ -27,7 +27,9 @@ export class AthleteController {
         if (isNaN(id)) return next(new BadRequestError('Invalid athlete ID'));
 
         const payload = req.body as UpdateAthleteDto;
-        const updatedAthlete = await this.athleteService.update(id, payload, req.user!.userId).catch(next);
+        const updatedAthlete = await this.athleteService
+            .update(id, payload, req.user!.userId)
+            .catch(next);
         return res.status(200).json({ message: 'Athlete updated', data: updatedAthlete });
     }
 
