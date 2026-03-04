@@ -1,4 +1,4 @@
-import { EntityManager, NotFoundError } from '@mikro-orm/mysql';
+import { EntityManager } from '@mikro-orm/mysql';
 
 import { Athlete } from './athlete.entity.js';
 import { orm } from '../../shared/db/orm.js';
@@ -6,7 +6,7 @@ import { User } from '../user/user.entity.js';
 import { Sport } from '../sport/sport.entity.js';
 import { Position } from '../sport/position.entity.js';
 import { CreateAthleteDto, UpdateAthleteDto } from './athlete.dto.js';
-import { BadRequestError, ForbiddenError } from '../../shared/erros/http.erros.js';
+import { BadRequestError, ForbiddenError, NotFoundError } from '../../shared/erros/http.erros.js';
 
 export class AthleteService {
     private get em(): EntityManager {

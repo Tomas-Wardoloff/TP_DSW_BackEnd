@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { EntityManager, NotFoundError } from '@mikro-orm/mysql';
+import { EntityManager } from '@mikro-orm/mysql';
 
 import { orm } from '../../shared/db/orm.js';
 import { User, UserType } from './user.entity.js';
@@ -7,7 +7,7 @@ import { CreateUserDto, UpdateUserDto } from './user.dto.js';
 import { AthleteService } from '../athlete/athlete.service.js';
 import { AgentService } from '../agent/agent.service.js';
 import { ClubService } from '../club/club.service.js';
-import { BadRequestError, ConflictError, ForbiddenError } from '../../shared/erros/http.erros.js';
+import { BadRequestError, ConflictError, ForbiddenError, NotFoundError } from '../../shared/erros/http.erros.js';
 
 export class UserService {
     private readonly clubService = new ClubService();

@@ -1,10 +1,10 @@
-import { EntityManager, NotFoundError } from '@mikro-orm/mysql';
+import { EntityManager } from '@mikro-orm/mysql';
 
 import { Agent } from './agent.entity.js';
 import { orm } from '../../shared/db/orm.js';
 import { User } from '../user/user.entity.js';
 import { CreateAgentDto, UpdateAgentDto } from './agent.dto.js';
-import { ForbiddenError } from '../../shared/erros/http.erros.js';
+import { ForbiddenError, NotFoundError } from '../../shared/erros/http.erros.js';
 
 export class AgentService {
     private get em(): EntityManager {
