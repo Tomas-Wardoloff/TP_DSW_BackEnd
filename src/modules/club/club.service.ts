@@ -4,6 +4,7 @@ import { Club } from './club.entity.js';
 import { orm } from '../../shared/db/orm.js';
 import { User } from '../user/user.entity.js';
 import { CreateClubDto, UpdateClubDto } from './club.dto.js';
+import { ForbiddenError, NotFoundError } from '../../shared/erros/http.erros.js';
 
 export class ClubService {
     private get em(): EntityManager {
@@ -47,9 +48,9 @@ export class ClubService {
 
         const club = await em.findOne(Club, { id });
 
-        if (!club) throw new Error('Club not found');
+        if (!club) throw new NotFoundError('Club not found');
 
-        if (club.user.id !== requestingUserId) throw new Error('Forbidden');
+        if (club.user.id !== requestingUserId) throw new ForbiddenError('Forbidden');
 
         em.assign(club, {
             ...(updateData.name && { name: updateData.name }),
@@ -66,9 +67,9 @@ export class ClubService {
 
         const club = await em.findOne(Club, { id });
 
-        if (!club) throw new Error('Club not found');
+        if (!club) throw new NotFoundError('Club not found');
 
-        if (club.user.id !== requestingUserId) throw new Error('Forbidden');
+        if (club.user.id !== requestingUserId) throw new ForbiddenError('Forbidden');
 
         club.deletedAt = new Date();
         await em.flush();
