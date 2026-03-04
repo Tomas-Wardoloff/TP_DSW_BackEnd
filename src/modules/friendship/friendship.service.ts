@@ -4,6 +4,12 @@ import { orm } from '../../shared/db/orm.js';
 import { User } from '../user/user.entity.js';
 import { Friendship, FriendshipStatus } from './friendship.entity.js';
 import { CreateFriendshipDto, UpdateFriendshipDto } from './friendship.dto.js';
+import {
+    BadRequestError,
+    ConflictError,
+    ForbiddenError,
+    NotFoundError,
+} from '../../shared/erros/http.erros.js';
 
 export class FriendshipService {
     private get em(): EntityManager {
@@ -57,14 +63,14 @@ export class FriendshipService {
 
         // No podés mandarte una solicitud a vos mismo
         if (requesterId === friendshipData.addresseeId) {
-            throw new Error('Cannot send friend request to yourself');
+            throw new ConflictError('Cannot send friend request to yourself');
         }
 
         const addressee = await em.findOne(User, { id: friendshipData.addresseeId });
-        if (!addressee) throw new Error('User not found');
+        if (!addressee) throw new NotFoundError('User not found');
 
         const requester = await em.findOne(User, { id: requesterId });
-        if (!requester) throw new Error('User not found');
+        if (!requester) throw new NotFoundError('User not found');
 
         // Buscamos si ya existe una relación entre estos dos usuarios
         const existing = await em.findOne(Friendship, {
@@ -76,8 +82,9 @@ export class FriendshipService {
 
         if (existing) {
             if (existing.status === FriendshipStatus.PENDING)
-                throw new Error('Friend request already sent');
-            if (existing.status === FriendshipStatus.ACCEPTED) throw new Error('Already friends');
+                throw new ConflictError('Friend request already sent');
+            if (existing.status === FriendshipStatus.ACCEPTED)
+                throw new ConflictError('Already friends');
 
             // Si fue REJECTED, permitimos reenviar la solicitud
             if (existing.status === FriendshipStatus.REJECTED) {
@@ -115,12 +122,12 @@ export class FriendshipService {
             }
         );
 
-        if (!friendship) throw new Error('Friend request not found');
+        if (!friendship) throw new NotFoundError('Friend request not found');
 
-        if (friendship.addressee.id !== requestingUserId) throw new Error('Forbidden');
+        if (friendship.addressee.id !== requestingUserId) throw new ForbiddenError('Forbidden');
 
         if (friendship.status !== FriendshipStatus.PENDING)
-            throw new Error('Friend request is no longer pending');
+            throw new BadRequestError('Friend request is no longer pending');
 
         friendship.status = updateData.status;
         await em.flush();
@@ -139,14 +146,14 @@ export class FriendshipService {
             }
         );
 
-        if (!friendship) throw new Error('Friend request not found');
+        if (!friendship) throw new NotFoundError('Friend request not found');
 
         // Solo los involucrados pueden eliminar la relación
         if (
             friendship.requester.id !== requestingUserId &&
             friendship.addressee.id !== requestingUserId
         ) {
-            throw new Error('Forbidden');
+            throw new ForbiddenError('Forbidden');
         }
 
         // Usamos remove físico en lugar de soft delete porque no
