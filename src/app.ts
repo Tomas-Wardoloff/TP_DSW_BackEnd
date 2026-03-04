@@ -1,41 +1,59 @@
-import 'reflect-metadata'
-import dotenv from 'dotenv'
-import cors from 'cors'
-import express from "express"
-import { athleteRouter } from "./athlete/athlete.routes.js"
-import { clubRouter } from "./club/club.routes.js"
-import { agentRouter } from "./agent/agent.routes.js"
-import { orm, syncSchema } from "./shared/db/orm.js"
-import { RequestContext } from '@mikro-orm/core'
-import { userRouter } from './user/user.routes.js'
-import { postRouter } from './post/post.routes.js'
+import cors from 'cors';
+import dotenv from 'dotenv';
+import express from 'express';
+import { NotFoundError, RequestContext } from '@mikro-orm/core';
 
-dotenv.config()
+import { orm, syncSchema } from './shared/db/orm.js';
+import UserRouter from './modules/user/user.routes.js';
+import ClubRouter from './modules/club/club.routes.js';
+import PostRouter from './modules/post/post.routes.js';
+import AuthRouter from './modules/auth/auth.routes.js';
+import AgentRouter from './modules/agent/agent.routes.js';
+import SportRouter from './modules/sport/sport.routes.js';
+import AthleteRouter from './modules/athlete/athlete.routes.js';
+import FriendshipRouter from './modules/friendship/friendship.routes.js';
+import { errorMiddleware } from './shared/middleware/error.middleware.js';
 
-const app = express()
+dotenv.config();
 
-app.use(express.json(), cors())
+const app = express();
 
-app.use(cors({ origin: 'http://localhost:4200' }))
-
+app.use(express.json());
+app.use(cors({ origin: 'http://localhost:5173' }));
 app.use((req, res, next) => {
-    RequestContext.create(orm.em, next)
-})
+    RequestContext.create(orm.em, next);
+});
 
-app.use('/api/athletes', athleteRouter)
-app.use('/api/clubs', clubRouter)
-app.use('/api/agents', agentRouter)
-app.use('/api/users', userRouter)
-app.use('/api/posts', postRouter)
+const routers = {
+    auth: new AuthRouter().getRouter(),
+    users: new UserRouter().getRouter(),
+    athletes: new AthleteRouter().getRouter(),
+    agents: new AgentRouter().getRouter(),
+    clubs: new ClubRouter().getRouter(),
+    posts: new PostRouter().getRouter(),
+    sports: new SportRouter().getRouter(),
+    friendships: new FriendshipRouter().getRouter(),
+};
 
-app.use((_, res) => {
-    return res.status(404).send({message: "Not found"})
-})
+app.use('/api/auth', routers.auth);
+app.use('/api/users', routers.users);
+app.use('/api/athletes', routers.athletes);
+app.use('/api/agents', routers.agents);
+app.use('/api/clubs', routers.clubs);
+app.use('/api/posts', routers.posts);
+app.use('/api/catalog', routers.sports);
+app.use('/api/friendships', routers.friendships);
 
-await syncSchema() // never in production
+app.use((_, res, next) => {
+    next(new NotFoundError('Route not found'));
+});
 
-const port = process.env.PORT || 3000
+//await syncSchema(); // never in production, lo comento para que no borre la base de datos cada vez que reinicio el servidor
+
+const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
-    console.log(`server running on http://localhost:${port}`)
-})
+    console.log(`Server running on http://localhost:${port}`);
+});
+
+app.use(errorMiddleware);
