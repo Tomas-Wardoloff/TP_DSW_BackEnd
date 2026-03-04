@@ -8,6 +8,7 @@ import { CreatePostDto, UpdatePostDto } from './post.dto.js';
 import { buildPaginatedResult, getPaginationParams } from '../../shared/utils/pagination.helper.js';
 import { PaginatedResult, PaginationDto } from '../../shared/dtos/pagination.dto.js';
 import { Friendship, FriendshipStatus } from '../friendship/friendship.entity.js';
+import { ForbiddenError, NotFoundError } from '../../shared/erros/http.erros.js';
 
 export class PostService {
     private get em(): EntityManager {
@@ -101,7 +102,7 @@ export class PostService {
         const em = this.em;
 
         const author = await em.findOne(User, { id: authorId });
-        if (!author) throw new Error('User not found');
+        if (!author) throw new NotFoundError('User not found');
 
         const post = em.create(Post, {
             content: postData.content,
@@ -117,9 +118,9 @@ export class PostService {
 
         const post = await em.findOne(Post, { id }, { populate: ['author'] });
 
-        if (!post) throw new Error('Post not found');
+        if (!post) throw new NotFoundError('Post not found');
 
-        if (post.author.id !== requestingUserId) throw new Error('Forbidden');
+        if (post.author.id !== requestingUserId) throw new ForbiddenError('Forbidden');
 
         post.content = updateData.content;
         await em.flush();
@@ -131,9 +132,9 @@ export class PostService {
 
         const post = await em.findOne(Post, { id }, { populate: ['author'] });
 
-        if (!post) throw new Error('Post not found');
+        if (!post) throw new NotFoundError('Post not found');
 
-        if (post.author.id !== requestingUserId) throw new Error('Forbidden');
+        if (post.author.id !== requestingUserId) throw new ForbiddenError('Forbidden');
 
         post.deletedAt = new Date();
         await em.flush();
@@ -146,10 +147,10 @@ export class PostService {
         const em = this.em;
 
         const post = await em.findOne(Post, { id: postId });
-        if (!post) throw new Error('Post not found');
+        if (!post) throw new NotFoundError('Post not found');
 
         const author = await em.findOne(User, { id: requestingUserId });
-        if (!author) throw new Error('User not found');
+        if (!author) throw new NotFoundError('User not found');
 
         const existingLike = await em.findOne(Like, {
             author: { id: requestingUserId },
