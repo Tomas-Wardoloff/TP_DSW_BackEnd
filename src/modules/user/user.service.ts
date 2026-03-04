@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { EntityManager } from '@mikro-orm/mysql';
+import { EntityManager, NotFoundError } from '@mikro-orm/mysql';
 
 import { orm } from '../../shared/db/orm.js';
 import { User, UserType } from './user.entity.js';
@@ -7,6 +7,7 @@ import { CreateUserDto, UpdateUserDto } from './user.dto.js';
 import { AthleteService } from '../athlete/athlete.service.js';
 import { AgentService } from '../agent/agent.service.js';
 import { ClubService } from '../club/club.service.js';
+import { BadRequestError, ConflictError, ForbiddenError } from '../../shared/erros/http.erros.js';
 
 export class UserService {
     private readonly clubService = new ClubService();
@@ -43,9 +44,7 @@ export class UserService {
         this.validateProfilePresence(userData);
 
         const userExists = await this.findByEmail(userData.email);
-        if (userExists) {
-            throw new Error('User already exists');
-        }
+        if (userExists) throw new ConflictError('User already exists');
 
         const hashedPassword = await bcrypt.hash(userData.password, 10);
 
@@ -76,15 +75,13 @@ export class UserService {
 
         const user = await em.findOne(User, { id });
 
-        if (!user) throw new Error('User not found');
+        if (!user) throw new NotFoundError('User not found');
 
-        if (user.id !== requestingUserId) throw new Error('Forbidden');
+        if (user.id !== requestingUserId) throw new ForbiddenError('Forbidden');
 
         if (updateData.email && updateData.email !== user.email) {
             const isEmailTaken = await this.findByEmail(updateData.email);
-            if (isEmailTaken) {
-                throw new Error('Email is already taken');
-            }
+            if (isEmailTaken) throw new ConflictError('Email is already taken');
         }
 
         if (updateData.password) {
@@ -106,9 +103,9 @@ export class UserService {
             { populate: ['athleteProfile', 'clubProfile', 'agentProfile'] }
         );
 
-        if (!user) throw new Error('User not found');
+        if (!user) throw new NotFoundError('User not found');
 
-        if (user.id !== requestingUserId) throw new Error('Forbidden');
+        if (user.id !== requestingUserId) throw new ForbiddenError('Forbidden');
 
         const now = new Date();
 
@@ -132,7 +129,7 @@ export class UserService {
         };
 
         if (!profileMap[userData.userType]) {
-            throw new Error('Profile data is required');
+            throw new BadRequestError('Profile data is required');
         }
     }
 }
