@@ -1,9 +1,10 @@
-import { EntityManager } from '@mikro-orm/mysql';
+import { EntityManager, NotFoundError } from '@mikro-orm/mysql';
 
 import { Agent } from './agent.entity.js';
 import { orm } from '../../shared/db/orm.js';
 import { User } from '../user/user.entity.js';
 import { CreateAgentDto, UpdateAgentDto } from './agent.dto.js';
+import { ForbiddenError } from '../../shared/erros/http.erros.js';
 
 export class AgentService {
     private get em(): EntityManager {
@@ -46,9 +47,9 @@ export class AgentService {
 
         const agent = await em.findOne(Agent, { id });
 
-        if (!agent) throw new Error('Agent not found');
+        if (!agent) throw new NotFoundError('Agent not found');
 
-        if (agent.user.id !== requestingUserId) throw new Error('Forbidden');
+        if (agent.user.id !== requestingUserId) throw new ForbiddenError('Forbidden');
 
         em.assign(agent, {
             ...(updateData.firstName && { firstName: updateData.firstName }),
@@ -64,10 +65,10 @@ export class AgentService {
 
         const agent = await em.findOne(Agent, { id });
         if (!agent) {
-            throw new Error('Agent not found');
+            throw new NotFoundError('Agent not found');
         }
 
-        if (agent.user.id !== requestingUserId) throw new Error('Forbidden');
+        if (agent.user.id !== requestingUserId) throw new ForbiddenError('Forbidden');
 
         agent.deletedAt = new Date();
         await em.flush();
