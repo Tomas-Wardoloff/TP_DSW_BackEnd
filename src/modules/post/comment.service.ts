@@ -5,6 +5,7 @@ import { orm } from '../../shared/db/orm.js';
 import { User } from '../user/user.entity.js';
 import { Comment } from './comment.entity.js';
 import { CreateCommentDto, UpdateCommentDto } from './comment.dto.js';
+import { BadRequestError, ForbiddenError, NotFoundError } from '../../shared/erros/http.erros.js';
 
 export class CommentService {
     private get em(): EntityManager {
@@ -19,23 +20,24 @@ export class CommentService {
         const em = this.em;
 
         const post = await em.findOne(Post, { id: postId });
-        if (!post) throw new Error('Post not found');
+        if (!post) throw new NotFoundError('Post not found');
 
         const author = await em.findOne(User, { id: authorId });
-        if (!author) throw new Error('User not found');
+        if (!author) throw new NotFoundError('User not found');
 
         let parentComment: Comment | undefined;
 
         if (commentData.parentCommentId) {
             const parent = await em.findOne(Comment, { id: commentData.parentCommentId });
-            if (!parent) throw new Error('Parent comment not found');
+            if (!parent) throw new NotFoundError('Parent comment not found');
 
             // Evitamos más de un nivel de anidado: un reply no puede
             // tener replies. Si el padre ya es un reply, rechazamos.
-            if (parent.parentComment) throw new Error('Cannot reply to a reply');
+            if (parent.parentComment) throw new BadRequestError('Cannot reply to a reply');
 
             // El reply debe pertenecer al mismo post
-            if (parent.post.id !== postId) throw new Error('Comment does not belong to this post');
+            if (parent.post.id !== postId)
+                throw new BadRequestError('Comment does not belong to this post');
 
             parentComment = parent;
         }
@@ -68,9 +70,9 @@ export class CommentService {
             }
         );
 
-        if (!comment) throw new Error('Comment not found');
+        if (!comment) throw new NotFoundError('Comment not found');
 
-        if (comment.author.id !== requestingUserId) throw new Error('Forbidden');
+        if (comment.author.id !== requestingUserId) throw new ForbiddenError('Forbidden');
 
         comment.content = updateData.content;
         await em.flush();
@@ -87,9 +89,9 @@ export class CommentService {
                 populate: ['author'],
             }
         );
-        if (!comment) throw new Error('Comment not found');
+        if (!comment) throw new NotFoundError('Comment not found');
 
-        if (comment.author.id !== requestingUserId) throw new Error('Forbidden');
+        if (comment.author.id !== requestingUserId) throw new ForbiddenError('Forbidden');
 
         comment.deletedAt = new Date();
         await em.flush();
