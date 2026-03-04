@@ -1,7 +1,7 @@
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
-import { RequestContext } from '@mikro-orm/core';
+import { NotFoundError, RequestContext } from '@mikro-orm/core';
 
 import { orm, syncSchema } from './shared/db/orm.js';
 import UserRouter from './modules/user/user.routes.js';
@@ -12,6 +12,7 @@ import AgentRouter from './modules/agent/agent.routes.js';
 import SportRouter from './modules/sport/sport.routes.js';
 import AthleteRouter from './modules/athlete/athlete.routes.js';
 import FriendshipRouter from './modules/friendship/friendship.routes.js';
+import { errorMiddleware } from './shared/middleware/error.middleware.js';
 
 dotenv.config();
 
@@ -43,8 +44,8 @@ app.use('/api/posts', routers.posts);
 app.use('/api/catalog', routers.sports);
 app.use('/api/friendships', routers.friendships);
 
-app.use((_, res) => {
-    return res.status(404).send({ message: 'Not found' });
+app.use((_, res, next) => {
+    next(new NotFoundError('Route not found'));
 });
 
 //await syncSchema(); // never in production, lo comento para que no borre la base de datos cada vez que reinicio el servidor
@@ -54,3 +55,5 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
 });
+
+app.use(errorMiddleware);
