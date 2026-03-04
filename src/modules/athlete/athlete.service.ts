@@ -1,11 +1,12 @@
-import { EntityManager } from '@mikro-orm/mysql';
+import { EntityManager, NotFoundError } from '@mikro-orm/mysql';
 
 import { Athlete } from './athlete.entity.js';
 import { orm } from '../../shared/db/orm.js';
-import { CreateAthleteDto, UpdateAthleteDto } from './athlete.dto.js';
 import { User } from '../user/user.entity.js';
 import { Sport } from '../sport/sport.entity.js';
 import { Position } from '../sport/position.entity.js';
+import { CreateAthleteDto, UpdateAthleteDto } from './athlete.dto.js';
+import { BadRequestError, ForbiddenError } from '../../shared/erros/http.erros.js';
 
 export class AthleteService {
     private get em(): EntityManager {
@@ -35,12 +36,12 @@ export class AthleteService {
     async create(em: EntityManager, user: User, athleteData: CreateAthleteDto): Promise<Athlete> {
         const sports = await em.find(Sport, { id: { $in: athleteData.sportIds } });
         if (sports.length !== athleteData.sportIds.length) {
-            throw new Error('One or more sport IDs are invalid');
+            throw new BadRequestError('One or more sport IDs are invalid');
         }
 
         const positions = await em.find(Position, { id: { $in: athleteData.positionIds } });
         if (positions.length !== athleteData.positionIds.length) {
-            throw new Error('One or more position IDs are invalid');
+            throw new BadRequestError('One or more position IDs are invalid');
         }
 
         const athlete = em.create(Athlete, {
@@ -74,14 +75,14 @@ export class AthleteService {
             }
         );
 
-        if (!athlete) throw new Error('Athlete not found');
+        if (!athlete) throw new NotFoundError('Athlete not found');
 
-        if (athlete.user.id !== requestingUserId) throw new Error('Forbidden');
+        if (athlete.user.id !== requestingUserId) throw new ForbiddenError('Forbidden');
 
         if (updateData.sportIds) {
             const sports = await em.find(Sport, { id: { $in: updateData.sportIds } });
             if (sports.length !== updateData.sportIds.length) {
-                throw new Error('One or more sport IDs are invalid');
+                throw new BadRequestError('One or more sport IDs are invalid');
             }
             athlete.sports.set(sports);
         }
@@ -89,7 +90,7 @@ export class AthleteService {
         if (updateData.positionIds) {
             const positions = await em.find(Position, { id: { $in: updateData.positionIds } });
             if (positions.length !== updateData.positionIds.length) {
-                throw new Error('One or more position IDs are invalid');
+                throw new BadRequestError('One or more position IDs are invalid');
             }
             athlete.positions.set(positions);
         }
@@ -112,9 +113,9 @@ export class AthleteService {
         const em = this.em;
 
         const athlete = await em.findOne(Athlete, { id });
-        if (!athlete) throw new Error('Athlete not found');
+        if (!athlete) throw new NotFoundError('Athlete not found');
 
-        if (athlete.user.id !== requestingUserId) throw new Error('Forbidden');
+        if (athlete.user.id !== requestingUserId) throw new ForbiddenError('Forbidden');
 
         athlete.deletedAt = new Date();
         await em.flush();
