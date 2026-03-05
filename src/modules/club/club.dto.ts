@@ -1,6 +1,12 @@
 import { Type } from 'class-transformer';
 import { IsString, IsDate, MinLength, IsOptional } from 'class-validator';
 
+export class FilterClubDto {
+    @IsOptional()
+    @IsString()
+    name?: string;
+}
+
 export class CreateClubDto {
     @IsString()
     @MinLength(3)
