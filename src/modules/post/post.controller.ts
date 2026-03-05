@@ -45,9 +45,14 @@ export class PostController {
     }
 
     async create(req: Request, res: Response, next: NextFunction) {
-        const payload = req.body as CreatePostDto;
-        const post = await this.postService.create(payload, req.user!.userId).catch(next);
-        return res.status(201).json({ message: 'Post created', data: post });
+        const files = (req.files as Express.Multer.File[]) ?? [];
+
+        if (!req.body.content) return next(new BadRequestError('Content is required'));
+
+        const payload: CreatePostDto = { content: req.body.content };
+
+        const post = await this.postService.create(payload, req.user!.userId, files).catch(next);
+        if (post) res.status(201).json({ message: 'Post created', data: post });
     }
 
     async update(req: Request, res: Response, next: NextFunction) {

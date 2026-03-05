@@ -1,3 +1,4 @@
+import fs from 'fs';
 import { EntityManager } from '@mikro-orm/mysql';
 
 import { Post } from './post.entity.js';
@@ -5,10 +6,11 @@ import { Like } from './like.entity.js';
 import { User } from '../user/user.entity.js';
 import { orm } from '../../shared/db/orm.js';
 import { CreatePostDto, UpdatePostDto } from './post.dto.js';
-import { buildPaginatedResult, getPaginationParams } from '../../shared/utils/pagination.helper.js';
-import { PaginatedResult, PaginationDto } from '../../shared/dtos/pagination.dto.js';
-import { Friendship, FriendshipStatus } from '../friendship/friendship.entity.js';
+import { PostMedia, MediaType } from './post-media.entity.js';
 import { ForbiddenError, NotFoundError } from '../../shared/erros/http.erros.js';
+import { Friendship, FriendshipStatus } from '../friendship/friendship.entity.js';
+import { PaginatedResult, PaginationDto } from '../../shared/dtos/pagination.dto.js';
+import { buildPaginatedResult, getPaginationParams } from '../../shared/utils/pagination.helper.js';
 
 export class PostService {
     private get em(): EntityManager {
@@ -98,7 +100,11 @@ export class PostService {
         return buildPaginatedResult(posts, total, pagination);
     }
 
-    async create(postData: CreatePostDto, authorId: number): Promise<Post> {
+    async create(
+        postData: CreatePostDto,
+        authorId: number,
+        files: Express.Multer.File[]
+    ): Promise<Post> {
         const em = this.em;
 
         const author = await em.findOne(User, { id: authorId });
@@ -109,7 +115,24 @@ export class PostService {
             author,
         });
 
-        await em.persistAndFlush(post);
+        em.persist(post);
+
+        // Creamos un registro PostMedia por cada archivo subido
+        files.forEach((file, index) => {
+            const postMedia = em.create(PostMedia, {
+                // Guardamos la ruta relativa. El frontend construye la URL completa usando la base URL del servidor.
+                url: `uploads/posts/${file.filename}`,
+                type: MediaType.IMAGE,
+                originalName: file.originalname,
+                order: index,
+                post,
+            });
+
+            em.persist(postMedia);
+        });
+
+        await em.flush();
+        await em.populate(post, ['media', 'author']);
         return post;
     }
 
@@ -130,11 +153,16 @@ export class PostService {
     async delete(id: number, requestingUserId: number): Promise<void> {
         const em = this.em;
 
-        const post = await em.findOne(Post, { id }, { populate: ['author'] });
-
+        const post = await em.findOne(Post, { id }, { populate: ['author', 'media'] });
         if (!post) throw new NotFoundError('Post not found');
-
         if (post.author.id !== requestingUserId) throw new ForbiddenError('Forbidden');
+
+        // Eliminamos los archivos del disco antes del soft delete
+        for (const media of post.media) {
+            if (fs.existsSync(media.url)) {
+                fs.unlinkSync(media.url);
+            }
+        }
 
         post.deletedAt = new Date();
         await em.flush();

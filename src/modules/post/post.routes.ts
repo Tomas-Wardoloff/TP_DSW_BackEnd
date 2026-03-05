@@ -2,9 +2,10 @@ import { Router } from 'express';
 
 import { PostController } from './post.controller.js';
 import { authMiddleware } from '../auth/auth.middleware.js';
-import { CreatePostDto, UpdatePostDto } from './post.dto.js';
+import { UpdatePostDto } from './post.dto.js';
 import { CreateCommentDto, UpdateCommentDto } from './comment.dto.js';
 import { validationMiddleware } from '../../shared/middleware/validation.middleware.js';
+import { uploadMiddleware } from '../../shared/middleware/upload.middleware.js';
 
 export default class PostRouter {
     private router = Router();
@@ -33,7 +34,7 @@ export default class PostRouter {
         this.router.post(
             '/',
             authMiddleware,
-            validationMiddleware(CreatePostDto),
+            uploadMiddleware.array('media', 4),
             (req, res, next) => this.postController.create(req, res, next)
         );
 
