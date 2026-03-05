@@ -9,6 +9,27 @@ import {
     IsOptional,
 } from 'class-validator';
 
+export class FilterAthleteDto {
+    @IsOptional()
+    @IsInt()
+    @Type(() => Number)
+    sportId?: number;
+
+    @IsOptional()
+    @IsInt()
+    @Type(() => Number)
+    positionId?: number;
+
+    @IsOptional()
+    @IsString()
+    nationality?: string;
+
+    @IsOptional()
+    @IsBoolean()
+    @Type(() => Boolean)
+    isSigned?: boolean;
+}
+
 export class CreateAthleteDto {
     @IsString()
     firstName!: string;
