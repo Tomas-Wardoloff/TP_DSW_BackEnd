@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-//import { env } from '../config/env.js';
+
 import { UserType } from '../../modules/user/user.entity.js';
 
 export interface JwtPayload {
@@ -16,13 +16,13 @@ export class JwtHelper {
     static generateAccessToken(payload: JwtPayload): string {
         return jwt.sign(payload, process.env.JWT_ACCESS_SECRET!, {
             expiresIn: parseInt(process.env.JWT_ACCESS_EXPIRES_IN!),
-        });
+        } as jwt.SignOptions);
     }
 
     static generateRefreshToken(payload: JwtPayload): string {
         return jwt.sign(payload, process.env.JWT_REFRESH_SECRET!, {
             expiresIn: parseInt(process.env.JWT_REFRESH_EXPIRES_IN!),
-        });
+        } as jwt.SignOptions);
     }
 
     static verifyAccessToken(token: string): DecodedToken {
@@ -31,5 +31,13 @@ export class JwtHelper {
 
     static verifyRefreshToken(token: string): DecodedToken {
         return jwt.verify(token, process.env.JWT_REFRESH_SECRET!) as DecodedToken;
+    }
+
+    static getRefreshTokenExpiration(): Date {
+        const expiresIn = process.env.JWT_REFRESH_EXPIRES_IN;
+        const days = parseInt(expiresIn!.replace('d', ''));
+        const expiration = new Date();
+        expiration.setDate(expiration.getDate() + days);
+        return expiration;
     }
 }

@@ -3,6 +3,7 @@ import { Router } from 'express';
 import { AuthController } from './auth.controller.js';
 import { LoginDto, RefreshTokenDto } from './auth.dto.js';
 import { validationMiddleware } from '../../shared/middleware/validation.middleware.js';
+import { authMiddleware } from './auth.middleware.js';
 
 export default class AuthRouter {
     private router = Router();
@@ -19,6 +20,10 @@ export default class AuthRouter {
 
         this.router.post('/refresh', validationMiddleware(RefreshTokenDto), (req, res, next) =>
             this.authController.refresh(req, res, next)
+        );
+
+        this.router.post('/logout', authMiddleware, (req, res, next) =>
+            this.authController.logout(req, res, next)
         );
     }
 
