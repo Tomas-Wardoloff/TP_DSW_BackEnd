@@ -1,14 +1,21 @@
+import { plainToInstance } from 'class-transformer';
 import { NextFunction, Request, Response } from 'express';
 
 import { AthleteService } from './athlete.service.js';
-import { UpdateAthleteDto } from './athlete.dto.js';
+import { FilterAthleteDto, UpdateAthleteDto } from './athlete.dto.js';
 import { BadRequestError, NotFoundError } from '../../shared/erros/http.erros.js';
+import { validate } from 'class-validator';
 
 export class AthleteController {
     private athleteService = new AthleteService();
 
     async findAll(req: Request, res: Response, next: NextFunction) {
-        const athletes = await this.athleteService.findAll().catch(next);
+        const filters = plainToInstance(FilterAthleteDto, req.query);
+
+        const errors = await validate(filters);
+        if (errors.length > 0) return next(new BadRequestError('Invalid filter parameters'));
+
+        const athletes = await this.athleteService.findAll(filters).catch(next);
         return res.status(200).json({ message: 'Athletes found', data: athletes });
     }
 

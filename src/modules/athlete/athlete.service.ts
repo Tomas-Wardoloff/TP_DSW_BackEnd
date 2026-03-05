@@ -5,7 +5,7 @@ import { orm } from '../../shared/db/orm.js';
 import { User } from '../user/user.entity.js';
 import { Sport } from '../sport/sport.entity.js';
 import { Position } from '../sport/position.entity.js';
-import { CreateAthleteDto, UpdateAthleteDto } from './athlete.dto.js';
+import { CreateAthleteDto, FilterAthleteDto, UpdateAthleteDto } from './athlete.dto.js';
 import { BadRequestError, ForbiddenError, NotFoundError } from '../../shared/erros/http.erros.js';
 
 export class AthleteService {
@@ -13,14 +13,21 @@ export class AthleteService {
         return orm.em.fork();
     }
 
-    async findAll(): Promise<Athlete[]> {
-        return this.em.find(
-            Athlete,
-            {},
-            {
-                populate: ['sports', 'positions', 'user'],
-            }
-        );
+    async findAll(filters: FilterAthleteDto): Promise<Athlete[]> {
+        const where: Record<string, any> = {};
+
+        if (filters.sportId) where.sports = { id: filters.sportId };
+
+        if (filters.positionId) where.positions = { id: filters.positionId };
+
+        if (filters.nationality) where.nationality = { $ilike: `%${filters.nationality}%` };
+
+        if (filters.isSigned !== undefined) where.isSigned = filters.isSigned;
+
+        return this.em.find(Athlete, where, {
+            populate: ['sports', 'positions', 'user'],
+            orderBy: { lastName: 'ASC' },
+        });
     }
 
     async findOne(id: number): Promise<Athlete | null> {
