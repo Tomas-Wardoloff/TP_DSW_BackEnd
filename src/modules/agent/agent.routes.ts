@@ -15,7 +15,9 @@ export default class AgentRouter {
     }
 
     private initializeRoutes() {
-        this.router.get('/', authMiddleware, (req, res, next) => this.agentController.findAll(req, res, next));
+        this.router.get('/', authMiddleware, (req, res, next) =>
+            this.agentController.findAll(req, res, next)
+        );
 
         this.router.get('/:id', authMiddleware, (req, res, next) =>
             this.agentController.findOne(req, res, next)

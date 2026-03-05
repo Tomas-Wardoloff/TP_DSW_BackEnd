@@ -18,14 +18,19 @@ export default class UserRouter {
             this.userController.create(req, res, next)
         );
 
-        this.router.get('/', authMiddleware, (req, res, next) => this.userController.findAll(req, res, next));
+        this.router.get('/', authMiddleware, (req, res, next) =>
+            this.userController.findAll(req, res, next)
+        );
 
         this.router.get('/:id', authMiddleware, (req, res, next) =>
             this.userController.findOne(req, res, next)
         );
 
-        this.router.patch('/:id', authMiddleware, validationMiddleware(UpdateUserDto), (req, res, next) =>
-            this.userController.update(req, res, next)
+        this.router.patch(
+            '/:id',
+            authMiddleware,
+            validationMiddleware(UpdateUserDto),
+            (req, res, next) => this.userController.update(req, res, next)
         );
 
         this.router.delete('/:id', authMiddleware, (req, res, next) =>
