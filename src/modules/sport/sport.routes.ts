@@ -14,13 +14,13 @@ export default class SportRouter {
         this.router.get(
             '/sports',
             /*authMiddleware,*/
-            (req, res) => this.sportController.findAllSports(req, res)
+            (req, res, next) => this.sportController.findAllSports(req, res, next)
         );
 
         this.router.get(
             '/sports/:id',
             /*authMiddleware,*/
-            (req, res) => this.sportController.findOneSport(req, res)
+            (req, res, next) => this.sportController.findOneSport(req, res, next)
         );
 
         // GET /catalog/positions
@@ -28,13 +28,13 @@ export default class SportRouter {
         this.router.get(
             '/positions',
             /*authMiddleware,*/
-            (req, res) => this.sportController.findAllPositions(req, res)
+            (req, res, next) => this.sportController.findAllPositions(req, res, next)
         );
 
         this.router.get(
             '/positions/:id',
             /*authMiddleware,*/
-            (req, res) => this.sportController.findOnePosition(req, res)
+            (req, res, next) => this.sportController.findOnePosition(req, res, next)
         );
     }
 

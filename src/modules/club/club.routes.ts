@@ -15,10 +15,12 @@ export default class ClubRouter {
     }
 
     private initializeRoutes() {
-        this.router.get('/', authMiddleware, (req, res) => this.clubController.findAll(req, res));
+        this.router.get('/', authMiddleware, (req, res, next) =>
+            this.clubController.findAll(req, res, next)
+        );
 
-        this.router.get('/:id', authMiddleware, (req, res) =>
-            this.clubController.findOne(req, res)
+        this.router.get('/:id', authMiddleware, (req, res, next) =>
+            this.clubController.findOne(req, res, next)
         );
 
         this.router.patch(
@@ -26,14 +28,14 @@ export default class ClubRouter {
             authMiddleware,
             authorizationMiddleware(UserType.CLUB),
             validationMiddleware(UpdateClubDto),
-            (req, res) => this.clubController.update(req, res)
+            (req, res, next) => this.clubController.update(req, res, next)
         );
 
         this.router.delete(
             '/:id',
             authMiddleware,
             authorizationMiddleware(UserType.CLUB),
-            (req, res) => this.clubController.delete(req, res)
+            (req, res, next) => this.clubController.delete(req, res, next)
         );
     }
 
