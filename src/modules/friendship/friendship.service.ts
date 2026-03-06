@@ -25,15 +25,15 @@ export class FriendshipService {
             },
             {
                 populate: [
-                            'requester',
-                            'requester.athleteProfile',
-                            'requester.clubProfile',
-                            'requester.agentProfile',
-                            'addressee',
-                            'addressee.athleteProfile',
-                            'addressee.clubProfile',
-                            'addressee.agentProfile',
-                        ],
+                    'requester',
+                    'requester.athleteProfile',
+                    'requester.clubProfile',
+                    'requester.agentProfile',
+                    'addressee',
+                    'addressee.athleteProfile',
+                    'addressee.clubProfile',
+                    'addressee.agentProfile',
+                ],
             }
         );
     }
@@ -46,10 +46,12 @@ export class FriendshipService {
                 status: FriendshipStatus.PENDING,
             },
             {
-                populate: ['requester',
-                            'requester.athleteProfile',
-                            'requester.clubProfile',
-                            'requester.agentProfile',],
+                populate: [
+                    'requester',
+                    'requester.athleteProfile',
+                    'requester.clubProfile',
+                    'requester.agentProfile',
+                ],
             }
         );
     }

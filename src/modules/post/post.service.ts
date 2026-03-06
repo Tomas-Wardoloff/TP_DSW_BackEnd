@@ -51,7 +51,16 @@ export class PostService {
 
         const [posts, total] = await Promise.all([
             em.find(Post, where, {
-                populate: ['author', 'author.athleteProfile', 'author.clubProfile', 'author.agentProfile', 'likes', 'comments', 'content', 'media'],
+                populate: [
+                    'author',
+                    'author.athleteProfile',
+                    'author.clubProfile',
+                    'author.agentProfile',
+                    'likes',
+                    'comments',
+                    'content',
+                    'media',
+                ],
                 orderBy: { createdAt: 'DESC' },
                 limit,
                 offset,
@@ -89,7 +98,16 @@ export class PostService {
 
         const [posts, total] = await Promise.all([
             em.find(Post, where, {
-                populate: ['author', 'author.athleteProfile', 'author.clubProfile', 'author.agentProfile', 'likes', 'comments', 'content', 'media'],
+                populate: [
+                    'author',
+                    'author.athleteProfile',
+                    'author.clubProfile',
+                    'author.agentProfile',
+                    'likes',
+                    'comments',
+                    'content',
+                    'media',
+                ],
                 orderBy: { createdAt: 'DESC' },
                 limit,
                 offset,
@@ -100,7 +118,11 @@ export class PostService {
         return buildPaginatedResult(posts, total, pagination);
     }
 
-    async create(postData: CreatePostDto, authorId: number,  files: Express.Multer.File[]): Promise<Post> {
+    async create(
+        postData: CreatePostDto,
+        authorId: number,
+        files: Express.Multer.File[]
+    ): Promise<Post> {
         const em = this.em;
 
         const author = await em.findOne(User, { id: authorId });
@@ -111,7 +133,7 @@ export class PostService {
             author,
         });
 
-        em.persist(post)
+        em.persist(post);
 
         // Creamos un registro PostMedia por cada archivo subido
         files.forEach((file, index) => {
