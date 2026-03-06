@@ -35,7 +35,7 @@ export class UserService {
         return this.em.findOne(
             User,
             { id },
-            { populate: ['athleteProfile', 'clubProfile', 'agentProfile'] }
+            { populate: ['athleteProfile', 'clubProfile', 'agentProfile', 'athleteProfile.sports', 'athleteProfile.positions'] }
         );
     }
 

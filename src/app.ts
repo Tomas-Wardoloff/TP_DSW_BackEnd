@@ -1,8 +1,6 @@
 import cors from 'cors';
-import path from 'path';
 import dotenv from 'dotenv';
 import express from 'express';
-import { fileURLToPath } from 'url';
 import { NotFoundError, RequestContext } from '@mikro-orm/core';
 
 import { orm, syncSchema } from './shared/db/orm.js';
@@ -18,9 +16,6 @@ import { errorMiddleware } from './shared/middleware/error.middleware.js';
 
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 const app = express();
 
 app.use(express.json());
@@ -28,6 +23,7 @@ app.use(cors({ origin: 'http://localhost:5173' }));
 app.use((req, res, next) => {
     RequestContext.create(orm.em, next);
 });
+app.use('/uploads', express.static('uploads'));
 
 const routers = {
     auth: new AuthRouter().getRouter(),
@@ -52,8 +48,6 @@ app.use('/api/friendships', routers.friendships);
 app.use((_, res, next) => {
     next(new NotFoundError('Route not found'));
 });
-
-app.use('/uploads', express.static(path.join(__dirname, '../../../uploads')));
 
 //await syncSchema(); // never in production, lo comento para que no borre la base de datos cada vez que reinicio el servidor
 
