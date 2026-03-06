@@ -1,6 +1,8 @@
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path/win32';
 import express from 'express';
+import { fileURLToPath } from 'url';
 import { NotFoundError, RequestContext } from '@mikro-orm/core';
 
 import { orm, syncSchema } from './shared/db/orm.js';
@@ -18,12 +20,23 @@ dotenv.config();
 
 const app = express();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 app.use(express.json());
-app.use(cors({ origin: 'http://localhost:5173' }));
+
+const allowedOrigins = process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : ['http://localhost:5173'];
+
+app.use(cors({
+    origin: allowedOrigins,
+    credentials: true,
+}));
+
 app.use((req, res, next) => {
     RequestContext.create(orm.em, next);
 });
-app.use('/uploads', express.static('uploads'));
+
+app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
 
 const routers = {
     auth: new AuthRouter().getRouter(),
@@ -49,6 +62,8 @@ app.use((_, res, next) => {
     next(new NotFoundError('Route not found'));
 });
 
+app.use(errorMiddleware);
+
 if (process.env.NODE_ENV === 'production') {
     const generator = orm.getSchemaGenerator();
     await generator.updateSchema();
@@ -58,8 +73,10 @@ if (process.env.NODE_ENV === 'production') {
 
 const port = process.env.PORT || 3000;
 
-app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
-});
+const url = process.env.NODE_ENV === 'production'
+    ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
+    : `http://localhost:${port}`;
 
-app.use(errorMiddleware);
+app.listen(port, () => {
+    console.log(`Server running on ${url}`);
+});
