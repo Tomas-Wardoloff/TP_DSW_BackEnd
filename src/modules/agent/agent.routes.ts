@@ -15,10 +15,12 @@ export default class AgentRouter {
     }
 
     private initializeRoutes() {
-        this.router.get('/', authMiddleware, (req, res) => this.agentController.findAll(req, res));
+        this.router.get('/', authMiddleware, (req, res, next) =>
+            this.agentController.findAll(req, res, next)
+        );
 
-        this.router.get('/:id', authMiddleware, (req, res) =>
-            this.agentController.findOne(req, res)
+        this.router.get('/:id', authMiddleware, (req, res, next) =>
+            this.agentController.findOne(req, res, next)
         );
 
         this.router.patch(
@@ -26,14 +28,14 @@ export default class AgentRouter {
             authMiddleware,
             authorizationMiddleware(UserType.AGENT),
             validationMiddleware(UpdateAgentDto),
-            (req, res) => this.agentController.update(req, res)
+            (req, res, next) => this.agentController.update(req, res, next)
         );
 
         this.router.delete(
             '/:id',
             authMiddleware,
             authorizationMiddleware(UserType.AGENT),
-            (req, res) => this.agentController.delete(req, res)
+            (req, res, next) => this.agentController.delete(req, res, next)
         );
 
         /*this.router.put(

@@ -15,12 +15,12 @@ export default class AthleteRouter {
     }
 
     private initializeRoutes() {
-        this.router.get('/', authMiddleware, (req, res) =>
-            this.athleteController.findAll(req, res)
+        this.router.get('/', authMiddleware, (req, res, next) =>
+            this.athleteController.findAll(req, res, next)
         );
 
-        this.router.get('/:id', authMiddleware, (req, res) =>
-            this.athleteController.findOne(req, res)
+        this.router.get('/:id', authMiddleware, (req, res, next) =>
+            this.athleteController.findOne(req, res, next)
         );
 
         this.router.patch(
@@ -28,14 +28,14 @@ export default class AthleteRouter {
             authMiddleware,
             authorizationMiddleware(UserType.ATHLETE),
             validationMiddleware(UpdateAthleteDto),
-            (req, res) => this.athleteController.update(req, res)
+            (req, res, next) => this.athleteController.update(req, res, next)
         );
 
         this.router.delete(
             '/:id',
             authMiddleware,
             authorizationMiddleware(UserType.ATHLETE),
-            (req, res) => this.athleteController.delete(req, res)
+            (req, res, next) => this.athleteController.delete(req, res, next)
         );
     }
 

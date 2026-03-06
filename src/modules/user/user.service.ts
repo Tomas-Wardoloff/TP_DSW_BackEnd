@@ -7,7 +7,12 @@ import { CreateUserDto, UpdateUserDto } from './user.dto.js';
 import { AthleteService } from '../athlete/athlete.service.js';
 import { AgentService } from '../agent/agent.service.js';
 import { ClubService } from '../club/club.service.js';
-import { BadRequestError, ConflictError, ForbiddenError, NotFoundError } from '../../shared/erros/http.erros.js';
+import {
+    BadRequestError,
+    ConflictError,
+    ForbiddenError,
+    NotFoundError,
+} from '../../shared/erros/http.erros.js';
 
 export class UserService {
     private readonly clubService = new ClubService();
@@ -30,7 +35,15 @@ export class UserService {
         return this.em.findOne(
             User,
             { id },
-            { populate: ['athleteProfile', 'clubProfile', 'agentProfile'] }
+            {
+                populate: [
+                    'athleteProfile',
+                    'clubProfile',
+                    'agentProfile',
+                    'athleteProfile.sports',
+                    'athleteProfile.positions',
+                ],
+            }
         );
     }
 

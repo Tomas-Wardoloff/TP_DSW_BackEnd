@@ -14,22 +14,27 @@ export default class UserRouter {
     }
 
     private initializeRoutes() {
-        this.router.post('/', validationMiddleware(CreateUserDto), (req, res) =>
-            this.userController.create(req, res)
+        this.router.post('/', validationMiddleware(CreateUserDto), (req, res, next) =>
+            this.userController.create(req, res, next)
         );
 
-        this.router.get('/', authMiddleware, (req, res) => this.userController.findAll(req, res));
-
-        this.router.get('/:id', authMiddleware, (req, res) =>
-            this.userController.findOne(req, res)
+        this.router.get('/', authMiddleware, (req, res, next) =>
+            this.userController.findAll(req, res, next)
         );
 
-        this.router.patch('/:id', authMiddleware, validationMiddleware(UpdateUserDto), (req, res) =>
-            this.userController.update(req, res)
+        this.router.get('/:id', authMiddleware, (req, res, next) =>
+            this.userController.findOne(req, res, next)
         );
 
-        this.router.delete('/:id', authMiddleware, (req, res) =>
-            this.userController.delete(req, res)
+        this.router.patch(
+            '/:id',
+            authMiddleware,
+            validationMiddleware(UpdateUserDto),
+            (req, res, next) => this.userController.update(req, res, next)
+        );
+
+        this.router.delete('/:id', authMiddleware, (req, res, next) =>
+            this.userController.delete(req, res, next)
         );
     }
 

@@ -23,6 +23,7 @@ app.use(cors({ origin: 'http://localhost:5173' }));
 app.use((req, res, next) => {
     RequestContext.create(orm.em, next);
 });
+app.use('/uploads', express.static('uploads'));
 
 const routers = {
     auth: new AuthRouter().getRouter(),

@@ -24,7 +24,16 @@ export class FriendshipService {
                 status: FriendshipStatus.ACCEPTED,
             },
             {
-                populate: ['requester', 'addressee'],
+                populate: [
+                    'requester',
+                    'requester.athleteProfile',
+                    'requester.clubProfile',
+                    'requester.agentProfile',
+                    'addressee',
+                    'addressee.athleteProfile',
+                    'addressee.clubProfile',
+                    'addressee.agentProfile',
+                ],
             }
         );
     }
@@ -37,7 +46,12 @@ export class FriendshipService {
                 status: FriendshipStatus.PENDING,
             },
             {
-                populate: ['requester'],
+                populate: [
+                    'requester',
+                    'requester.athleteProfile',
+                    'requester.clubProfile',
+                    'requester.agentProfile',
+                ],
             }
         );
     }

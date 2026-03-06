@@ -15,18 +15,18 @@ export default class FriendshipRouter {
 
     private initializeRoutes() {
         // Amistades aceptadas del usuario autenticado
-        this.router.get('/friends', authMiddleware, (req, res) =>
-            this.friendshipController.findFriends(req, res)
+        this.router.get('/friends', authMiddleware, (req, res, next) =>
+            this.friendshipController.findFriends(req, res, next)
         );
 
         // Solicitudes recibidas pendientes
-        this.router.get('/pending/received', authMiddleware, (req, res) =>
-            this.friendshipController.findPendingReceived(req, res)
+        this.router.get('/pending/received', authMiddleware, (req, res, next) =>
+            this.friendshipController.findPendingReceived(req, res, next)
         );
 
         // Solicitudes enviadas pendientes
-        this.router.get('/pending/sent', authMiddleware, (req, res) =>
-            this.friendshipController.findPendingSent(req, res)
+        this.router.get('/pending/sent', authMiddleware, (req, res, next) =>
+            this.friendshipController.findPendingSent(req, res, next)
         );
 
         // Enviar solicitud de amistad
@@ -34,7 +34,7 @@ export default class FriendshipRouter {
             '/',
             authMiddleware,
             validationMiddleware(CreateFriendshipDto),
-            (req, res) => this.friendshipController.sendRequest(req, res)
+            (req, res, next) => this.friendshipController.sendRequest(req, res, next)
         );
 
         // Aceptar o rechazar una solicitud recibida
@@ -42,12 +42,12 @@ export default class FriendshipRouter {
             '/:id',
             authMiddleware,
             validationMiddleware(UpdateFriendshipDto),
-            (req, res) => this.friendshipController.respondToRequest(req, res)
+            (req, res, next) => this.friendshipController.respondToRequest(req, res, next)
         );
 
         // Eliminar amistad o cancelar solicitud pendiente
-        this.router.delete('/:id', authMiddleware, (req, res) =>
-            this.friendshipController.remove(req, res)
+        this.router.delete('/:id', authMiddleware, (req, res, next) =>
+            this.friendshipController.remove(req, res, next)
         );
     }
 

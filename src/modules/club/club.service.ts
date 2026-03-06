@@ -3,7 +3,7 @@ import { EntityManager } from '@mikro-orm/mysql';
 import { Club } from './club.entity.js';
 import { orm } from '../../shared/db/orm.js';
 import { User } from '../user/user.entity.js';
-import { CreateClubDto, UpdateClubDto } from './club.dto.js';
+import { CreateClubDto, FilterClubDto, UpdateClubDto } from './club.dto.js';
 import { ForbiddenError, NotFoundError } from '../../shared/erros/http.erros.js';
 
 export class ClubService {
@@ -11,14 +11,15 @@ export class ClubService {
         return orm.em.fork();
     }
 
-    async findAll(): Promise<Club[]> {
-        return this.em.find(
-            Club,
-            {},
-            {
-                populate: ['agents', 'user'],
-            }
-        );
+    async findAll(filters: FilterClubDto): Promise<Club[]> {
+        const where: Record<string, any> = {};
+
+        if (filters.name) where.name = { $ilike: `%${filters.name}%` };
+
+        return this.em.find(Club, where, {
+            populate: ['agents', 'user'],
+            orderBy: { name: 'ASC' },
+        });
     }
 
     async findOne(id: number): Promise<Club | null> {

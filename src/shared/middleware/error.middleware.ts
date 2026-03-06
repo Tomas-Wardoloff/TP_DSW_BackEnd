@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
-import { AppError } from '../erros/http.erros';
+import { AppError } from '../erros/http.erros.js';
 
 export function errorMiddleware(error: Error, req: Request, res: Response, next: NextFunction) {
     if (error instanceof AppError) {
