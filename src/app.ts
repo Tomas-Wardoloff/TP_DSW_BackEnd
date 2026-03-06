@@ -49,7 +49,12 @@ app.use((_, res, next) => {
     next(new NotFoundError('Route not found'));
 });
 
-//await syncSchema(); // never in production, lo comento para que no borre la base de datos cada vez que reinicio el servidor
+if (process.env.NODE_ENV === 'production') {
+    const generator = orm.getSchemaGenerator();
+    await generator.updateSchema();
+} else {
+    await syncSchema();
+}
 
 const port = process.env.PORT || 3000;
 
