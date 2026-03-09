@@ -10,7 +10,7 @@ export class AuthController {
     async login(req: Request, res: Response, next: NextFunction) {
         const payload = req.body as LoginDto;
         const tokens = await this.authService.login(payload).catch(next);
-        return res.status(200).json({ message: 'Login successful', data: tokens });
+        if (tokens) return res.status(200).json({ message: 'Login successful', data: tokens });
     }
 
     async refresh(req: Request, res: Response, next: NextFunction) {

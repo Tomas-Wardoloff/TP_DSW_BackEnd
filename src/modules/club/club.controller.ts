@@ -16,7 +16,7 @@ export class ClubController {
         if (errors.length > 0) return next(new BadRequestError('Invalid filter parameters'));
 
         const clubs = await this.clubService.findAll(filters).catch(next);
-        return res.status(200).json({ message: 'Clubs found', data: clubs });
+        if (clubs) return res.status(200).json({ message: 'Clubs found', data: clubs });
     }
 
     async findOne(req: Request, res: Response, next: NextFunction) {
@@ -26,7 +26,7 @@ export class ClubController {
         const club = await this.clubService.findOne(id).catch(next);
         if (!club) return next(new NotFoundError('Club not found'));
 
-        return res.status(200).json({ message: 'Club found', data: club });
+        if (club) return res.status(200).json({ message: 'Club found', data: club });
     }
 
     async update(req: Request, res: Response, next: NextFunction) {
@@ -37,14 +37,18 @@ export class ClubController {
         const updatedClub = await this.clubService
             .update(id, payload, req.user!.userId)
             .catch(next);
-        return res.status(200).json({ message: 'Club updated', data: updatedClub });
+        if (updatedClub)
+            return res.status(200).json({ message: 'Club updated', data: updatedClub });
     }
 
     async delete(req: Request, res: Response, next: NextFunction) {
         const id = Number.parseInt(req.params.id);
         if (isNaN(id)) return next(new BadRequestError('Invalid id'));
 
-        await this.clubService.delete(id, req.user!.userId).catch(next);
-        return res.status(204).send();
+        const deleted = await this.clubService
+            .delete(id, req.user!.userId)
+            .then(() => true)
+            .catch(next);
+        if (deleted) return res.status(204).send();
     }
 }

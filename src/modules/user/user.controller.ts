@@ -11,7 +11,7 @@ export class UserController {
     async findAll(req: Request, res: Response, next: NextFunction) {
         const userType = req.query.userType as UserType | undefined;
         const users = await this.userService.findAll(userType).catch(next);
-        return res.status(200).json({ message: 'Users found', data: users });
+        if (users) return res.status(200).json({ message: 'Users found', data: users });
     }
 
     async findOne(req: Request, res: Response, next: NextFunction) {
@@ -21,13 +21,13 @@ export class UserController {
         const user = await this.userService.findOne(id).catch(next);
         if (!user) return next(new NotFoundError('User not found'));
 
-        return res.status(200).json({ message: 'User found', data: user });
+        if (user) return res.status(200).json({ message: 'User found', data: user });
     }
 
     async create(req: Request, res: Response, next: NextFunction) {
         const payload = req.body as CreateUserDto;
         const newUser = await this.userService.create(payload).catch(next);
-        return res.status(201).json({ message: 'User created', data: newUser });
+        if (newUser) return res.status(201).json({ message: 'User created', data: newUser });
     }
 
     async update(req: Request, res: Response, next: NextFunction) {
@@ -38,14 +38,18 @@ export class UserController {
         const updatedUser = await this.userService
             .update(id, payload, req.user!.userId)
             .catch(next);
-        return res.status(200).json({ message: 'User updated', data: updatedUser });
+        if (updatedUser)
+            return res.status(200).json({ message: 'User updated', data: updatedUser });
     }
 
     async delete(req: Request, res: Response, next: NextFunction) {
         const id = Number.parseInt(req.params.id);
         if (isNaN(id)) return next(new BadRequestError('Invalid user ID'));
 
-        await this.userService.delete(id, req.user!.userId).catch(next);
-        return res.status(204).send();
+        const deleted = await this.userService
+            .delete(id, req.user!.userId)
+            .then(() => true)
+            .catch(next);
+        if (deleted) return res.status(204).send();
     }
 }

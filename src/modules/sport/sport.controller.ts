@@ -8,7 +8,7 @@ export class SportController {
 
     async findAllSports(req: Request, res: Response, next: NextFunction) {
         const sports = await this.sportService.findAllSports().catch(next);
-        return res.status(200).json({ message: 'Sports found', data: sports });
+        if (sports) return res.status(200).json({ message: 'Sports found', data: sports });
     }
 
     async findOneSport(req: Request, res: Response, next: NextFunction) {
@@ -30,7 +30,7 @@ export class SportController {
             return next(new BadRequestError('Invalid sportId'));
 
         const positions = await this.sportService.findAllPositions(sportId).catch(next);
-        return res.status(200).json({ message: 'Positions found', data: positions });
+        if (positions) return res.status(200).json({ message: 'Positions found', data: positions });
     }
 
     async findOnePosition(req: Request, res: Response, next: NextFunction) {

@@ -18,7 +18,7 @@ export class PostController {
         };
 
         const posts = await this.postService.findAll(req.user!.userId, pagination).catch(next);
-        return res.status(200).json({ message: 'Posts found', data: posts });
+        if (posts) return res.status(200).json({ message: 'Posts found', data: posts });
     }
 
     async findOne(req: Request, res: Response, next: NextFunction) {
@@ -28,7 +28,7 @@ export class PostController {
         const post = await this.postService.findOne(id);
         if (!post) return next(new NotFoundError('Post not found'));
 
-        return res.status(200).json({ message: 'Post found', data: post });
+        if (post) return res.status(200).json({ message: 'Post found', data: post });
     }
 
     async findByUser(req: Request, res: Response, next: NextFunction) {
@@ -41,7 +41,7 @@ export class PostController {
         };
 
         const posts = await this.postService.findByUser(userId, pagination).catch(next);
-        return res.status(200).json({ message: 'Posts found', data: posts });
+        if (posts) return res.status(200).json({ message: 'Posts found', data: posts });
     }
 
     async create(req: Request, res: Response, next: NextFunction) {
@@ -61,15 +61,18 @@ export class PostController {
 
         const payload = req.body as UpdatePostDto;
         const post = await this.postService.update(id, payload, req.user!.userId).catch(next);
-        return res.status(200).json({ message: 'Post updated', data: post });
+        if (post) return res.status(200).json({ message: 'Post updated', data: post });
     }
 
     async delete(req: Request, res: Response, next: NextFunction) {
         const id = Number.parseInt(req.params.id);
         if (isNaN(id)) return next(new BadRequestError('Invalid id'));
 
-        await this.postService.delete(id, req.user!.userId);
-        return res.status(204).send();
+        const deleted = await this.postService
+            .delete(id, req.user!.userId)
+            .then(() => true)
+            .catch(next);
+        if (deleted) return res.status(204).send();
     }
 
     async toggleLike(req: Request, res: Response, next: NextFunction) {
@@ -93,7 +96,7 @@ export class PostController {
         const comment = await this.commentService
             .create(postId, payload, req.user!.userId)
             .catch(next);
-        return res.status(201).json({ message: 'Comment created', data: comment });
+        if (comment) return res.status(201).json({ message: 'Comment created', data: comment });
     }
 
     async updateComment(req: Request, res: Response, next: NextFunction) {
@@ -104,14 +107,17 @@ export class PostController {
         const comment = await this.commentService
             .update(commentId, payload, req.user!.userId)
             .catch(next);
-        return res.status(200).json({ message: 'Comment updated', data: comment });
+        if (comment) return res.status(200).json({ message: 'Comment updated', data: comment });
     }
 
     async deleteComment(req: Request, res: Response, next: NextFunction) {
         const commentId = Number.parseInt(req.params.commentId);
         if (isNaN(commentId)) return next(new BadRequestError('Invalid id'));
 
-        await this.commentService.delete(commentId, req.user!.userId).catch(next);
-        return res.status(204).send();
+        const deleted = await this.commentService
+            .delete(commentId, req.user!.userId)
+            .then(() => true)
+            .catch(next);
+        if (deleted) return res.status(204).send();
     }
 }
