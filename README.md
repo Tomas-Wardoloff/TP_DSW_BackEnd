@@ -4,6 +4,17 @@ la carrera de Ingeniería en Sistemas de Información en la [Universidad Tecnol�
 
 En el siguiente link se encuentra la propuesta de la aplicación a desarrollar: [proposal.md](https://github.com/Tomas-Wardoloff/tp/blob/main/proposal.md)
 
+## Stack Tecnológico 
+- Node.js + TypeScript 
+- Express.js 
+- MikroORM v6
+- MySQL 
+- JWT (access + refresh)
+- bcrypt
+- class-validator + class-transformer 
+- multer 
+- Vitest 
+
 ## Instalación
 1. Clona el repositorio 
 ```sh
@@ -12,11 +23,11 @@ En el siguiente link se encuentra la propuesta de la aplicación a desarrollar: 
 ```
 2. Instala las dependencias con pnpm
 ```sh
-    pnpm install | npm install
+    npm install
 ```
 3. Inicia el servidor 
 ```sh
-    pnpm start | npm start
+    npm start
 ```
 4. Accede a la aplicacion, navegando a la ruta `http://localhost:3000` en tu navegador
 
@@ -30,7 +41,7 @@ Para ejecutar el proyecto, primero asegúrate de tener corriendo el contenedor d
 Y luego ejecuta el siguiente comando en la terminal para iniciar el servidor en modo desarrollo:
 
 ```sh
-    pnpm run start:dev | npm run start:dev
+    npm run start:dev
 ```
 
 Este comando compilará el proyecto y lo iniciará, recargando automáticamente cuando se realicen cambios en el código.
