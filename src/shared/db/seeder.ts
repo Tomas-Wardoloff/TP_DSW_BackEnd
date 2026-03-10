@@ -57,16 +57,16 @@ async function seedCatalog(em: EntityManager) {
     const soccerPositions = [
         'Goalkeeper',
         'Central Defender',
-        'Lateral Derecho',
-        'Lateral Izquierdo',
-        'Líbero',
-        'Mediocampista Defensivo',
-        'Mediocampista Central',
-        'Mediocampista Ofensivo',
-        'Extremo Derecho',
-        'Extremo Izquierdo',
-        'Delantero Centro',
-        'Segundo Delantero',
+        'Right Back',
+        'Left Back',
+        'Libero',
+        'Defensive Midfielder',
+        'Central Midfielder',
+        'Attacking Midfielder',
+        'Right Winger',
+        'Left Winger',
+        'Center Forward',
+        'Second Striker',
     ];
 
     for (const name of soccerPositions) {
@@ -80,7 +80,7 @@ async function seedCatalog(em: EntityManager) {
 
     await em.flush();
 
-    const basketballPositions = ['Base', 'Escolta', 'Alero', 'Ala-Pívot', 'Pívot'];
+    const basketballPositions = ['Point Guard', 'Shooting Guard', 'Small Forward', 'Power Forward', 'Center'];
 
     for (const name of basketballPositions) {
         const existing = await em.findOne(Position, {
@@ -100,9 +100,9 @@ async function seedUsers(em: EntityManager) {
     const athleteUserExists = await em.findOne(User, { email: 'atleta@sportlink.com' });
 
     if (!athleteUserExists) {
-        const soccer = await em.findOne(Sport, { name: 'Fútbol' });
-        const basketball = await em.findOne(Sport, { name: 'Básquet' });
-        const position = await em.findOne(Position, { name: 'Delantero Centro' });
+        const soccer = await em.findOne(Sport, { name: 'Soccer' });
+        const basketball = await em.findOne(Sport, { name: 'Basketball' });
+        const position = await em.findOne(Position, { name: 'Center Forward' });
 
         const athleteUser = em.create(User, {
             email: 'atleta@sportlink.com',
