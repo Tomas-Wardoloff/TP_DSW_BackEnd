@@ -15,13 +15,13 @@ export interface DecodedToken extends JwtPayload {
 export class JwtHelper {
     static generateAccessToken(payload: JwtPayload): string {
         return jwt.sign(payload, process.env.JWT_ACCESS_SECRET!, {
-            expiresIn: parseInt(process.env.JWT_ACCESS_EXPIRES_IN!),
+            expiresIn:process.env.JWT_ACCESS_EXPIRES_IN!,
         } as jwt.SignOptions);
     }
 
     static generateRefreshToken(payload: JwtPayload): string {
         return jwt.sign(payload, process.env.JWT_REFRESH_SECRET!, {
-            expiresIn: parseInt(process.env.JWT_REFRESH_EXPIRES_IN!),
+            expiresIn:process.env.JWT_REFRESH_EXPIRES_IN!,
         } as jwt.SignOptions);
     }
 
