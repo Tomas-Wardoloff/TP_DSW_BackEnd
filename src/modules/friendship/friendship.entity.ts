@@ -4,9 +4,9 @@ import { User } from '../user/user.entity.js';
 import { BaseEntity } from '../../shared/db/baseEntity.entity.js';
 
 export enum FriendshipStatus {
-    PENDING = 'pending',
-    ACCEPTED = 'accepted',
-    REJECTED = 'rejected',
+    PENDING = 'PENDING',
+    ACCEPTED = 'ACCEPTED',
+    REJECTED = 'REJECTED',
 }
 
 @Entity()
