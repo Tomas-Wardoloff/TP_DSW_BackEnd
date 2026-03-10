@@ -25,12 +25,21 @@ const __dirname = path.dirname(__filename);
 
 app.use(express.json());
 
-const allowedOrigins = process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : ['http://localhost:5173'];
-
-app.use(cors({
-    origin: allowedOrigins,
-    credentials: true,
-}));
+app.use(
+    cors({
+        origin: (origin, callback) => {
+            // Permitimos localhost en desarrollo
+            // Permitimos cualquier subdominio de vercel.app
+            // Permitimos requests sin origin (Postman, Railway shell, etc)
+            if (!origin || origin.includes('localhost') || origin.includes('vercel.app')) {
+                callback(null, true);
+            } else {
+                callback(new Error('Not allowed by CORS'));
+            }
+        },
+        credentials: true,
+    })
+);
 
 app.use((req, res, next) => {
     RequestContext.create(orm.em, next);
@@ -73,9 +82,10 @@ if (process.env.NODE_ENV === 'production') {
 
 const port = process.env.PORT || 3000;
 
-const url = process.env.NODE_ENV === 'production'
-    ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
-    : `http://localhost:${port}`;
+const url =
+    process.env.NODE_ENV === 'production'
+        ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
+        : `http://localhost:${port}`;
 
 app.listen(port, () => {
     console.log(`Server running on ${url}`);
